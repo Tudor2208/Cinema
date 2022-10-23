@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Profil</title>
+    <title>Acasă</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
@@ -12,7 +12,7 @@
 <body>
     <div class="header">
         <h1><a href="index" style="color: inherit; text-decoration: none;">Cinema</a></h1>
-        {% if user.is_authenticated%}
+        {% if user.is_authenticated %}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
         {% endif %}
@@ -24,15 +24,13 @@
             <ul>
                 <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
                 <li><a href="#program">Program <i class="fa fa-calendar"></i></a></li>
-                <li><a class = "active" href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+                <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="#contact">Contact <i class="fa fa-phone"></i></a></li>
                 <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
-                <li><a href="manager" style = "color: #cc0000">Manager </a></li>
+                <li><a class = "active" href="manager" style = "color: #cc0000">Manager </a></li>
+
             </ul>
         </div>
-
-
-
    </div>
 
 
