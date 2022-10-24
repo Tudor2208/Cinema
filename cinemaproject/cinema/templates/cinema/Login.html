@@ -1,0 +1,81 @@
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <title>Logare</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+
+
+<body>
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">Cinema</a></h1>
+    </div>
+
+    <div class="content">
+        <div class="navbar">
+            <ul>
+                <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+                <li><a href="#program">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+                <li><a href="#contact">Contact <i class="fa fa-phone"></i></a></li>
+                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                <li><a href="manager" style = "color: #cc0000">Manager </a></li>
+            </ul>
+        </div>
+
+        <section class="vh-100">
+            <br>
+            <h1 id = "login-header"> Loghează-te </h1>
+            <div class="container-fluid h-custom">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+        
+                    <div class="col-md-9 col-lg-6 col-xl-5">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                            class="img-fluid" alt="Sample image">
+                    </div>
+                    <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                        
+                        <form method = "POST" action = "">
+                            {% csrf_token %}
+                            <!-- Username input -->
+                            <div class="form-outline mb-4">
+                                <input type="text" name = "username" id="username" class="form-control form-control-lg"
+                                    placeholder="Introdu un utilizator valid" />
+                                <label class="form-label" for="username">Utilizator</label>
+                            </div>
+
+                            <!-- Password input -->
+                            <div class="form-outline mb-3">
+                                <input type="password" name = "password" id="password" class="form-control form-control-lg"
+                                    placeholder="Introdu parola" />
+                                <label class="form-label" for="password">Parolă</label>
+                            </div>
+
+                            <div class="text-center text-lg-start mt-4 pt-2">
+                                <input type="submit" name="login" class = "button">
+
+                                <p class="small fw-bold mt-2 pt-1 mb-0">Nu ai un cont? <a href="register"
+                                        class="link-success">Înregistrează-te</a></p>
+                            </div>
+
+                            {% for message in  messages%}
+                                <p id = "message"> {{message}} </p>
+                            {% endfor %}
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    
+</body>
+
+</html>
