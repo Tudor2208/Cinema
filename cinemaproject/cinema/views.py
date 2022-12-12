@@ -64,4 +64,5 @@ def employeePage(request):
 @allowed_users(allowed_roles=['manager'])
 def managerPage(request):
     return render(request, 'cinema/Manager.html')
+   
 
