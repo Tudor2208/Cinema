@@ -7,17 +7,52 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 # Create your views here.
 
 
 def index(request):
     return render(request, 'cinema/Homepage.html')
 
-def profilePage(request):
+def profilePage(request): 
     if not request.user.is_authenticated:
         return redirect('login')
+        
+    if request.method == "POST":
+        username = request.POST.get('username')
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
 
-    return render(request, 'cinema/Profile.html')
+        if username != None:
+            record = User.objects.get(username = request.user)
+            record.username = username
+            record.save(update_fields=['username'])
+
+        if email != None:
+            record = User.objects.get(username = request.user)
+            record.email = email
+            record.save(update_fields=['email'])
+
+        if firstname != None:
+            record = User.objects.get(username = request.user)
+            record.first_name = firstname
+            record.save(update_fields=['first_name'])
+
+        if lastname != None:
+            record = User.objects.get(username = request.user)
+            record.last_name = lastname
+            record.save(update_fields=['last_name'])
+
+    context = {'user':request.user, 
+               'email':request.user.email,
+               'last_name':request.user.last_name,
+               'first_name':request.user.first_name,
+               'last_login':request.user.last_login,
+               'date_joined':request.user.date_joined}
+               
+
+    return render(request, 'cinema/Profile.html', context=context)
 
 def loginPage(request):
     if request.user.is_authenticated:
