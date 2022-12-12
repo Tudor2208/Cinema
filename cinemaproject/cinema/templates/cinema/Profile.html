@@ -1,11 +1,14 @@
 {% load static %}
-
+<script src="{% static 'cinema/scripts.js' %}"></script>
 <html lang="en">
 
 <head>
     <title>Profil</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 
 
@@ -40,7 +43,83 @@
         </div>
 
 
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Câmp</th>
+                <th scope="col">Informație</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Nume utilizator</td>
+                <td>{{user}}</td>
+                <td>
+                    <form method="POST" action="">
+                      {%csrf_token%}
+                      <input type="text" name="username">
+                      <input type="submit" name="submit" value ="modifică">
+                    </form>
+                </td>
+                
+              </tr>
 
+              <tr>
+                <th scope="row">2</th>
+                <td>Prenume</td>
+                <td>{{first_name}}</td>
+                <td>
+                  <form method="POST" action="">
+                    {%csrf_token%}
+                    <input type="text" name="firstname">
+                    <input type="submit" name="submit" value ="modifică">
+                  </form>
+              </td>
+              </tr>
+
+              <tr>
+                <th scope="row">3</th>
+                <td>Nume de familie</td>
+                <td>{{last_name}}</td>
+                <td>
+                  <form method="POST" action="">
+                    {%csrf_token%}
+                    <input type="text" name="lastname">
+                    <input type="submit" name="submit" value ="modifică">
+                  </form>
+              </td>
+              </tr>
+
+              <tr>
+                <th scope="row">3</th>
+                <td>E-Mail</td>
+                <td>{{email}}</td>
+                <td>
+                  <form method="POST" action="">
+                    {%csrf_token%}
+                    <input type="text" name="email">
+                    <input type="submit" name="submit" value ="modifică">
+                  </form>
+              </td>
+              </tr>
+
+              <tr>
+                <th scope="row">4</th>
+                <td>Dată înregistrare</td>
+                <td>{{date_joined}}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">5</th>
+                <td>Ultima logare</td>
+                <td>{{last_login}}</td>
+              </tr>
+
+            </tbody>
+          </table>
+      
    </div>
 
 
