@@ -57,12 +57,12 @@ def register(request):
     context = {'form' : form}
     return render(request, 'cinema/Register.html', context)
 
-@allowed_users(allowed_roles=['employee', 'manager'])
+@allowed_users(allowed_roles=['employee', 'admin'])
 def employeePage(request):
     return render(request, 'cinema/Employee.html')
 
-@allowed_users(allowed_roles=['manager'])
-def managerPage(request):
-    return render(request, 'cinema/Manager.html')
+@allowed_users(allowed_roles=['admin'])
+def adminPage(request):
+    return render(request, 'cinema/Admin.html')
    
 
