@@ -102,3 +102,6 @@ def adminPage(request):
     return render(request, 'cinema/Admin.html')
    
 
+@login_required(login_url = "login")
+def contactPage(request):
+    return render(request, 'cinema/Contact.html')
