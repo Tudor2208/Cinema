@@ -49,7 +49,8 @@ def profilePage(request):
                'last_name':request.user.last_name,
                'first_name':request.user.first_name,
                'last_login':request.user.last_login,
-               'date_joined':request.user.date_joined}
+               'date_joined':request.user.date_joined,
+               'password': request.user.password}
                
 
     return render(request, 'cinema/Profile.html', context=context)

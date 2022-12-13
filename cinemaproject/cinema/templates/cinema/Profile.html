@@ -14,7 +14,7 @@
 
 <body>
     <div class="header">
-        <h1><a href="index" style="color: inherit; text-decoration: none;">Cinema</a></h1>
+        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
         {% if user.is_authenticated%}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
@@ -59,7 +59,7 @@
                 <td>
                     <form method="POST" action="">
                       {%csrf_token%}
-                      <input type="text" name="username">
+                      <input type="text" name="username" placeholder = "new username" value = {{user}}>
                       <input type="submit" name="submit" value ="modifică">
                     </form>
                 </td>
@@ -73,7 +73,7 @@
                 <td>
                   <form method="POST" action="">
                     {%csrf_token%}
-                    <input type="text" name="firstname">
+                    <input type="text" name="firstname" placeholder = "new first name">
                     <input type="submit" name="submit" value ="modifică">
                   </form>
               </td>
@@ -86,7 +86,7 @@
                 <td>
                   <form method="POST" action="">
                     {%csrf_token%}
-                    <input type="text" name="lastname">
+                    <input type="text" name="lastname" placeholder = "new last name">
                     <input type="submit" name="submit" value ="modifică">
                   </form>
               </td>
@@ -99,7 +99,7 @@
                 <td>
                   <form method="POST" action="">
                     {%csrf_token%}
-                    <input type="text" name="email">
+                    <input type="text" name="email" placeholder = "new email">
                     <input type="submit" name="submit" value ="modifică">
                   </form>
               </td>
