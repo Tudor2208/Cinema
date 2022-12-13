@@ -33,7 +33,12 @@
         </div>
    </div>
 
-
+   <div>
+    {% comment %} TODO: PRELUARE MESAJE {% endcomment %}
+        {% for message in messages_list %}
+            <p> {{message.sender}} {{message.text}} {{message.send_date}}</p>
+        {% endfor %}
+   </div> 
 
 </body>
 

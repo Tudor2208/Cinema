@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from .models import Message
 # Create your views here.
 
 
@@ -99,9 +100,16 @@ def employeePage(request):
 
 @allowed_users(allowed_roles=['admin'])
 def adminPage(request):
-    return render(request, 'cinema/Admin.html')
+    all_messages = Message.objects.all()
+    context = {'messages_list' : all_messages}
+    return render(request, 'cinema/Admin.html', context=context)
    
 
 @login_required(login_url = "login")
 def contactPage(request):
+    if request.method == 'POST':
+        text = request.POST.get('message')
+        message = Message(sender=request.user, text=text)
+        message.save()
+
     return render(request, 'cinema/Contact.html')
