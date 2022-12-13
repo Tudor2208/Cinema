@@ -1,0 +1,66 @@
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <title>Acasă</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+
+
+<body>
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">Cinema</a></h1>
+        {% if user.is_authenticated %}
+            <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
+        {% else %}
+        {% endif %}
+        
+    </div>
+
+    <div class="content">
+        <div class="navbar">
+            <ul>
+                <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+                <li><a href="#program">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+                <li><a class = "active" href="contact">Contact <i class="fa fa-phone"></i></a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin'%}
+                        <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                    {% endif %}
+
+                    {% if group_for.name == 'admin' %}
+                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+
+                {% endfor %}
+                
+            </ul>
+        </div>
+   </div>
+
+   <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+    <h1 id = "login-header"> Lasa-ne un mesaj! </h1>                 
+    <form method = "POST" action = "">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-12">
+                <textarea style = "font-size: 20" rows = "5" name="message" class="form-control mb-30" placeholder="Mesajul dumneavoastra"></textarea>
+              </div>
+        </div>
+
+        <div class="text-center text-lg-start mt-4 pt-2">
+            <input type="submit" name="getintouch" class = "button">
+        </div>
+
+    </form>
+</div>
+
+
+</body>
+
+</html>
