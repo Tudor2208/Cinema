@@ -96,20 +96,34 @@ def register(request):
 
 @allowed_users(allowed_roles=['employee', 'admin'])
 def employeePage(request):
-    return render(request, 'cinema/Employee.html')
+    if request.method == "POST":
+        resp = request.POST.get('response')
+        id = request.POST.get('aux_field')
+        msg = Message.objects.get(id = id)
+        msg.response = resp
+        msg.save(update_fields=['response'])
+
+    all_messages = Message.objects.all()
+    context = {'messages_list' : all_messages}
+    return render(request, 'cinema/Employee.html', context=context)
 
 @allowed_users(allowed_roles=['admin'])
 def adminPage(request):
-    all_messages = Message.objects.all()
-    context = {'messages_list' : all_messages}
-    return render(request, 'cinema/Admin.html', context=context)
+    return render(request, 'cinema/Admin.html')
    
 
 @login_required(login_url = "login")
 def contactPage(request):
     if request.method == 'POST':
         text = request.POST.get('message')
-        message = Message(sender=request.user, text=text)
+        message = Message(sender=request.user, text=text)                  
         message.save()
+       
+    messages = Message.objects.filter(sender = request.user)
+    dict = {'messages' : messages}
+    return render(request, 'cinema/Contact.html', context=dict)
 
-    return render(request, 'cinema/Contact.html')
+def deleteMessagePage(request, msg_nr):
+    instance = Message.objects.get(id=msg_nr)
+    instance.delete()
+    return redirect('contact')   

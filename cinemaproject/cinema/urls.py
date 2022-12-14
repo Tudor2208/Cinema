@@ -10,4 +10,5 @@ urlpatterns = [
     path("employee", views.employeePage, name="employee"),
     path("admin", views.adminPage, name="admin"),
     path("contact", views.contactPage, name="contact"),
+    path('delete/message/<int:msg_nr>', views.deleteMessagePage, name ="delete_message")
 ]

@@ -6,6 +6,9 @@
     <title>Acasă</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 
 
@@ -33,12 +36,10 @@
         </div>
    </div>
 
-   <div>
-    {% comment %} TODO: PRELUARE MESAJE {% endcomment %}
-        {% for message in messages_list %}
-            <p> {{message.sender}} {{message.text}} {{message.send_date}}</p>
-        {% endfor %}
-   </div> 
+   
+
+
+    
 
 </body>
 
