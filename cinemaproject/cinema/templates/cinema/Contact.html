@@ -43,8 +43,8 @@
         </div>
    </div>
 
-   <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-    <h1 id = "login-header"> Lasa-ne un mesaj! </h1>                 
+   <div style = "margin-left:16%" class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+    <h4 id = "login-header"> Lasa o intrebare sau un mesaj, iar un angajat iti va raspunde </h4>               
     <form method = "POST" action = "">
         {% csrf_token %}
         <div class="row">
@@ -58,8 +58,30 @@
         </div>
 
     </form>
-</div>
+    </div>
 
+    
+    <div >
+        {% if messages%}
+            <p style = "margin-left:25%; font-size:20"> Istoric mesaje trimise </p>
+        {% else %}
+        {% endif %}
+
+            {% for message in messages %}
+            <div align = "center" style = "border: solid; width: 50%; margin-left:8%">
+                <p>Mesaj trimis in data de: {{message.send_date}}</p>
+                <p>Text: {{message.text}} </p>
+                {% if message.response != "none" %}
+                    <p style = "color: #0EAF92">Raspuns: {{message.response}} </p>
+                {% else %}
+                    <p style = "color: #ff0000">Nu ai primit niciun raspuns la acest mesaj!</p>
+                {% endif %}
+                <button type="button"><a style = "text-decoration: none" href = "delete/message/{{message.id}}">sterge</a></button>
+            </div>
+            <br>
+            {% endfor %}
+        
+    </div>
 
 </body>
 

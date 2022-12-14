@@ -6,6 +6,9 @@
     <title>Acasă</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 
 
@@ -38,6 +41,40 @@
    </div>
 
 
+
+   <div>
+    <p align = "center" style = "font-size: 24"> Mesaje trimise de utilizatori </p>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Utilizator</th>
+            <th scope="col">Mesaj</th>
+            <th scope="col">Data</th>
+          </tr>
+        </thead>
+
+        <tbody>
+            {% for message in messages_list %}
+                {% if message.response == "none" %}
+                    <td>{{message.sender}}</td>
+                    <td>{{message.text}}</td>
+                    <td>{{message.send_date}}</td>
+                    <td>
+                        <form method="POST" action="">
+                            {%csrf_token%}
+                            <textarea style = "font-size: 15" rows = "2" name="response" class="form-control mb-30" placeholder="Raspunsul dumneavoastra"></textarea>
+                            <input hidden type = "text" value = {{message.id}} name = "aux_field">
+                            <input type="submit" name="submit" value ="Raspunde">
+                        </form> </td>
+                    </tr>
+                {% else %}
+                {% endif %}
+               
+             {% endfor %}
+        </tbody>
+    </table>
+
+    </div> 
 
 </body>
 
