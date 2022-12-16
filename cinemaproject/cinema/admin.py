@@ -1,8 +1,16 @@
 from django.contrib import admin
 # Register your models here.
 
-from .models import Message
+from .models import *
  
-@admin.register(Message)
-class RequestDemoAdmin(admin.ModelAdmin):
-  list_display = [field.name for field in Message._meta.get_fields()]
+
+admin.site.register(Genre)
+admin.site.register(Admin)
+admin.site.register(Movie)
+admin.site.register(Show)
+admin.site.register(Employee)
+admin.site.register(CinemaHall)
+admin.site.register(Ticket)
+admin.site.register(Booking)
+admin.site.register(ShowSeat)
+admin.site.register(Message)

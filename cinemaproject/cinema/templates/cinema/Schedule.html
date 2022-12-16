@@ -1,0 +1,100 @@
+{% load static %}
+<script src="{% static 'cinema/scripts.js' %}"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<html lang="en">
+    
+<head>
+    <title>Acasă</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+
+<body>
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        {% if user.is_authenticated %}
+            <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
+        {% else %}
+        {% endif %}
+        
+    </div>
+
+    <div class="content">
+        <div class="navbar">
+            <ul>
+                <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+                <li><a class = "active" href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+                <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin'%}
+                        <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                    {% endif %}
+
+                    {% if group_for.name == 'admin' %}
+                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+
+                {% endfor %}
+                
+            </ul>
+        </div>
+
+       
+        <br> <br>
+        <div align = "center">
+            <h4> FILMELE CARE RULEAZĂ ÎN ACEASTĂ SĂPTĂMÂNĂ </h4>
+            <h5 id="week"> <h5>
+        </div>   
+       <br> <br> <br>
+
+       {% comment %} TODO: de adaugat si genre (ceva bug la adaugat din admin panel) {% endcomment %}
+       <div align = "center" class = "shows">
+            {% for movie in movies %}
+                <div style="border: solid; width: 70%; border-width:1; margin-left:2%" class = "show">
+                        <table style = "border:1px solid black">
+                            <tr style = "background-color: #c5e8ce">
+                                <th >  
+                                    <h4><b>{{movie.title|upper}}</b></h4>
+                                    <h5><i>Durată</i>: {{movie.duration}} min</h5> 
+                                    <h5><i>Regizor</i>: {{movie.director}} </h5>
+                                    <h5><i>Data de lansare</i>: {{movie.release_date}} </h5>
+                                    <h5><i>Descriere</i>: {{movie.description}} </h5></th>
+                                <th> 
+                                    Trailer
+                                    <iframe width="500" height="300" src="{{movie.link_trailer}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </th>
+                            </tr>
+                        </table>
+                        
+                        <div style = "background-color: #c5e8ce" align = "center">
+                            {% for film, shows in shows_list %}
+                            {% if film.title == movie.title %}
+                                    {% for show in shows %}
+                                        <button style = "margin-right: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 18px" type="button"><a style = "text-decoration: none" href = "#">{{show.start_hour}} ({{show.view_mode}})</a></button>
+                                    {% endfor %}
+                                    
+                            {% else %}
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                </div>
+                <br> <br> <br>  
+            {% endfor %}
+        </div>   
+        
+   </div>
+
+   
+   <script> 
+    var curr = new Date;
+    var firstday = new Date(curr.setDate(curr.getDate() - curr.getDay()));
+    var lastday = new Date(curr.setDate(curr.getDate() - curr.getDay()+6));
+    const elmnt = document.getElementById("week"); 
+    document.getElementById("week").innerHTML = firstday.getFullYear() + "." + (firstday.getMonth()+1) + "." + (firstday.getDate()+1) + " - " +
+                                                lastday.getFullYear() + "." + (lastday.getMonth()+1) + "." + (lastday.getDate()+1);
+    </script>
+</body>
+
+</html>
