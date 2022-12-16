@@ -8,7 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Message
+from .models import Message, Show
+import pendulum
 # Create your views here.
 
 
@@ -126,4 +127,23 @@ def contactPage(request):
 def deleteMessagePage(request, msg_nr):
     instance = Message.objects.get(id=msg_nr)
     instance.delete()
-    return redirect('contact')   
+    return redirect('contact')
+
+def schedulePage(request):
+    today = pendulum.now()
+    start = today.start_of('week').to_date_string()
+    end = today.end_of('week').to_date_string()
+    shows = Show.objects.filter(date__range = [start, end])
+    movies = []
+    for show in shows:
+        if show.movie_ID not in movies:
+            movies.append(show.movie_ID)
+    
+    shows_list = []
+    for movie in movies:
+        movie_shows = Show.objects.filter(movie_ID = movie)
+        t = (movie, movie_shows)
+        shows_list.append(t)
+
+    context = {'shows' : shows, 'movies' : movies, 'shows_list' : shows_list}
+    return render(request, 'cinema/Schedule.html', context=context)       
