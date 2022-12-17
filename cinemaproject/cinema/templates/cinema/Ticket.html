@@ -1,0 +1,115 @@
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <title>Cumpărare bilet</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+
+
+<body>
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        {% if user.is_authenticated %}
+            <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
+        {% else %}
+        {% endif %}
+        
+    </div>
+
+    <div class="content">
+        <div class="navbar">
+            <ul>
+                <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+                <li><a class = "active" href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+                <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
+                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'admin' %}
+                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+                {% endfor %}
+
+            </ul>
+        </div>
+   </div>
+
+   <div align="center" style="font-size:22">
+        <h2>Cumpără bilet la <b>{{my_show.movie_ID}}</b>!<h2>
+        <h4>Sala: {{my_show.cinema_hall_ID}}, proiecție {{my_show.view_mode}}</h4>
+        <h4>{{my_show.date}}, ora: {{my_show.start_hour}}</h4>
+        <h4>Locuri disponibile: <span style = "color:#1cbd1c"> {{av_seats}} </span></h4>    
+   </div>
+
+   <br><br>
+
+  <div>
+    <form align = "center" method="POST" action="">
+    <table align = "center" style="width:50%" class = "table">
+        <tr>
+          <th>CATEGORIE</th>
+          <th>PREȚ</th>
+          <th>CANTITATE</th>
+        </tr>
+            {%csrf_token%}
+            {% for ticket in tickets %}
+                <tr>
+                    <td>{{ticket.category}}</td>
+                    <td id = {{ticket.id}}> {{ticket.price}}</td>
+                    <td>  <input type = "text" name = "quantity{{ticket.id}}" value = 0> </td>
+                </tr>
+               
+            {% endfor %}
+            
+    </table>
+        <h4 id = "pret"> PREȚ: 0 lei</h4>
+        <br> <br>
+        <input id="submitbtn" class = "button" type="submit" name="next" value ="Next" disabled>
+        <input id="total_price" type = "text" name = "total_price" value = 0 hidden>
+        <input id="total_seats" type = "text" name = "total_seats" value = 0 hidden>
+    </form>
+
+
+  </div>  
+   
+  <script>
+    var inputs = document.getElementsByTagName("input");
+    for(var i = 0; i < inputs.length; i ++) {
+        if(inputs[i].type == "text"){
+            inputs[i].setAttribute("oninput", "checkSeats({{av_seats}})");
+        }
+    }
+
+    function checkSeats(av_seats) {
+        var inputs = document.getElementsByTagName("input");
+        var total_price = 0;
+        var total_seats = 0;
+        for(var i = 0; i < inputs.length; i ++) {
+            name = inputs[i].getAttribute("name");
+            if(name.startsWith("quantity")) {
+                nr = name[name.length-1];
+                var price = parseFloat(document.getElementById(nr).innerText);
+                quantity = parseInt(inputs[i].value);   
+                total_price += price * quantity;
+                total_seats += quantity;
+            }
+        }
+
+        document.getElementById("pret").innerHTML = "PREȚ: " + total_price + " lei";
+        document.getElementById("submitbtn").disabled=(total_seats > av_seats);
+
+        document.getElementById("total_price").value=total_price;
+        document.getElementById("total_seats").value=total_seats;
+        
+    }
+  </script>
+
+</body>
+
+</html>

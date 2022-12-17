@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import *
 # Create your models here.
+
 class Message(models.Model):
     sender = models.CharField(max_length=30)
     text = models.CharField(max_length=250)
@@ -32,18 +35,19 @@ class Show(models.Model):
         'CinemaHall', on_delete=models.SET_NULL, null=True)
     date = models.DateField()
     start_hour = models.TimeField()
-    end_hour = models.TimeField()
     view_mode = models.CharField(max_length=45)
  
     def __str__(self):
-        return str(self.movie_ID) + " / " + str(self.date) + " / " + str(self.start_hour)
+        return str(self.movie_ID) + " / " + str(self.date) + " / " + str(self.start_hour) + " / " + str(self.view_mode)
  
 class CinemaHall(models.Model):
     nr_of_seats = models.IntegerField()
     accept_4DX = models.BooleanField()
- 
+
     def __str__(self):
-        return str(self.nr_of_seats) + " " + str(self.accept_4DX)
+        if self.accept_4DX:
+            return "S" + str(self.id) + " (" + str(self.nr_of_seats) + " locuri, 4DX)"
+        return "S" + str(self.id) + " (" + str(self.nr_of_seats) + " locuri)"     
  
 class Employee(models.Model):
     salary = models.FloatField()
@@ -65,7 +69,7 @@ class ShowSeat(models.Model):
     booked = models.BooleanField(default = False)
 
     def __str__(self):
-        return str(self.show_ID) + " " + str(self.seat_nr) + " " + str(self.booked)  
+        return str(self.show_ID) + " / locul " + str(self.seat_nr) + " - " + str(self.booked)  
  
 class Ticket(models.Model):
     category = models.CharField(max_length=20)
@@ -84,3 +88,16 @@ class Booking(models.Model):
 
     def __str__(self):
         return str(self.show_id) + " " + str(self.user_id) + " " + str(self.nr_of_seats) + " " + str(self.booking_time)     
+
+
+@receiver(post_save, sender=Show)
+def hear_signal(sender, instance, **kwargs):
+    if kwargs.get('created'):
+        cinema_hall = CinemaHall.objects.filter(id=instance.cinema_hall_ID.id)[0]
+        mock_booking = Booking.objects.filter(id=4)[0]
+        seats = cinema_hall.nr_of_seats
+        for i in range(seats):
+            #booking 4 - e hardcodat, inseamna NULL
+            showSeat = ShowSeat(show_ID=instance, booking_ID=mock_booking, seat_nr=i+1, booked=False)
+            showSeat.save()   
+    return

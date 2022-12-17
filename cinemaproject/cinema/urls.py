@@ -10,6 +10,9 @@ urlpatterns = [
     path("employee", views.employeePage, name="employee"),
     path("admin", views.adminPage, name="admin"),
     path("contact", views.contactPage, name="contact"),
-    path('delete/message/<int:msg_nr>', views.deleteMessagePage, name ="delete_message"),
-    path("schedule", views.schedulePage, name = "schedule")
+    path("delete/message/<int:msg_nr>", views.deleteMessagePage, name ="delete_message"),
+    path("schedule", views.schedulePage, name = "schedule"),
+    path("create-movie", views.createMoviePage, name = "create_movie"),
+    path("create-show", views.createShowPage, name = "create_show"),
+    path("buyticket<int:show_nr>", views.ticketPage, name = "ticket")
 ]

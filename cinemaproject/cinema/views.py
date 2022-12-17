@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm
+from .forms import CreateUserForm, MovieForm, ShowForm, BookingForm
 from .decorators import *
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Message, Show
+from .models import Message, Show, ShowSeat, Ticket, Booking
 import pendulum
+from datetime import date, datetime
+import calendar
 # Create your views here.
 
 
@@ -124,6 +126,7 @@ def contactPage(request):
     dict = {'messages' : messages}
     return render(request, 'cinema/Contact.html', context=dict)
 
+@allowed_users(allowed_roles=['admin'])
 def deleteMessagePage(request, msg_nr):
     instance = Message.objects.get(id=msg_nr)
     instance.delete()
@@ -141,9 +144,51 @@ def schedulePage(request):
     
     shows_list = []
     for movie in movies:
-        movie_shows = Show.objects.filter(movie_ID = movie)
+        movie_shows = Show.objects.filter(movie_ID = movie, date__range = [start, end])
         t = (movie, movie_shows)
         shows_list.append(t)
 
-    context = {'shows' : shows, 'movies' : movies, 'shows_list' : shows_list}
-    return render(request, 'cinema/Schedule.html', context=context)       
+
+    context = { 'movies' : movies, 
+                'shows_list' : shows_list 
+                }
+    
+    return render(request, 'cinema/Schedule.html', context=context)
+
+@allowed_users(allowed_roles=['admin', 'employee'])
+def createMoviePage(request):
+    context ={}
+    form = MovieForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        form.save()
+        return redirect("employee")
+    context['form']= form
+    return render(request, "cinema/CreateMovie.html", context=context)
+
+@allowed_users(allowed_roles=['admin', 'employee'])
+def createShowPage(request):
+    context ={}
+    form = ShowForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        form.save()
+        return redirect("employee")
+    context['form']= form
+    return render(request, "cinema/CreateShow.html", context=context)
+
+
+def ticketPage(request, show_nr):
+    myShow = Show.objects.filter(id=show_nr)[0]
+    av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
+    tickets = Ticket.objects.all()
+    context = {'show_nr' : show_nr,
+                'my_show' : myShow,
+                'av_seats' : av_seats,
+                'tickets' : tickets}
+    if request.method == 'POST':
+        seats = request.POST.get('total_seats')
+        price = request.POST.get('total_price')
+        curr_time = datetime.now()
+        book = Booking(show_id=myShow, user_id=request.user, nr_of_seats=seats, booking_time=curr_time, total_price=price)
+        book.save()
+        
+    return render(request, "cinema/Ticket.html", context=context)                  
