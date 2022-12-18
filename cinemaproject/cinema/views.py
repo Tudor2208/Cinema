@@ -12,6 +12,8 @@ from .models import Message, Show, ShowSeat, Ticket, Booking
 import pendulum
 from datetime import date, datetime
 import calendar
+from django.urls import reverse
+from fpdf import FPDF
 # Create your views here.
 
 
@@ -179,16 +181,72 @@ def createShowPage(request):
 def ticketPage(request, show_nr):
     myShow = Show.objects.filter(id=show_nr)[0]
     av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
+    all_seats = ShowSeat.objects.filter(show_ID = myShow)
     tickets = Ticket.objects.all()
     context = {'show_nr' : show_nr,
                 'my_show' : myShow,
                 'av_seats' : av_seats,
-                'tickets' : tickets}
+                'tickets' : tickets,
+                'all_seats' : all_seats}
     if request.method == 'POST':
         seats = request.POST.get('total_seats')
         price = request.POST.get('total_price')
         curr_time = datetime.now()
-        book = Booking(show_id=myShow, user_id=request.user, nr_of_seats=seats, booking_time=curr_time, total_price=price)
-        book.save()
+        if seats != None:
+            book = Booking(show_id=myShow, user_id=request.user, nr_of_seats=seats, booking_time=curr_time, total_price=price)
+            book.save()
+            context['booking'] = book
+
+        return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)) 
         
-    return render(request, "cinema/Ticket.html", context=context)                  
+    return render(request, "cinema/Ticket.html", context=context)
+
+def selectSeatsPage(request, show_nr):
+    myShow = Show.objects.filter(id=show_nr)[0]
+    av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
+    all_seats = ShowSeat.objects.filter(show_ID = myShow)
+    tickets = Ticket.objects.all()
+    occupied_seats = ShowSeat.objects.filter(show_ID = myShow, booked=True)
+    occ_seats_nr = []
+    for seat in occupied_seats:
+        occ_seats_nr.append(seat.seat_nr)
+
+    booking = Booking.objects.filter(show_id=myShow, user_id=request.user)[0]
+    context = {'show_nr' : show_nr,
+        'my_show' : myShow,
+        'av_seats' : av_seats,
+        'tickets' : tickets,
+        'all_seats' : all_seats,
+        'booking' : booking}
+    context['occ_seats_nr'] = occ_seats_nr   
+    
+    if request.method == 'POST':
+        selected_seats = request.POST.get('selected_seats')
+        list_of_strings = selected_seats.split(' ')[1:]
+        list_of_integers = list(map(int, list_of_strings))
+        for nr in list_of_integers:
+            showseat = ShowSeat.objects.filter(show_ID=myShow, seat_nr=nr)[0]
+            showseat.booked = True
+            showseat.save(update_fields=['booked'])
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 15)
+        pdf.cell(200, 10, txt = "Bilet CinemaCity",
+                ln = 1, align = 'C')
+        
+        pdf.cell(200, 10, txt = "Spectacol: " + str(myShow),
+                ln = 2, align = 'L')
+
+        pdf.cell(200, 10, txt = "Locurile cumparate: " + selected_seats,
+                ln = 3, align = 'L')
+        
+        pdf.cell(200, 10, txt = "Pret: " + str(booking.total_price) + " lei",
+                ln = 4, align = 'L')
+
+        pdf.output("../Bilet_" + str(request.user) + ".pdf")
+        
+        return redirect("success")      
+    return render(request, "cinema/SelectSeats.html", context=context)
+
+def successPage(request):
+    return render(request, "cinema/SuccessTicket.html")                          

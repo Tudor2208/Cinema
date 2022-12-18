@@ -87,7 +87,7 @@ class Booking(models.Model):
     total_price = models.FloatField()
 
     def __str__(self):
-        return str(self.show_id) + " " + str(self.user_id) + " " + str(self.nr_of_seats) + " " + str(self.booking_time)     
+        return str(self.show_id) + " / " + str(self.user_id) + " / " + str(self.nr_of_seats) + " / " + str(self.booking_time) + " / " + str(self.total_price) + " lei"    
 
 
 @receiver(post_save, sender=Show)

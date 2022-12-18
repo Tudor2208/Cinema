@@ -14,5 +14,7 @@ urlpatterns = [
     path("schedule", views.schedulePage, name = "schedule"),
     path("create-movie", views.createMoviePage, name = "create_movie"),
     path("create-show", views.createShowPage, name = "create_show"),
-    path("buyticket<int:show_nr>", views.ticketPage, name = "ticket")
+    path("buyticket<int:show_nr>", views.ticketPage, name = "ticket"),
+    path("selectseats<int:show_nr>", views.selectSeatsPage, name="seats"),
+    path("success", views.successPage, name="success")
 ]
