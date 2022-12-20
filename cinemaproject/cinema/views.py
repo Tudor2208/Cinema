@@ -177,7 +177,7 @@ def createShowPage(request):
     context['form']= form
     return render(request, "cinema/CreateShow.html", context=context)
 
-
+@login_required(login_url = "login")
 def ticketPage(request, show_nr):
     myShow = Show.objects.filter(id=show_nr)[0]
     av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
@@ -201,6 +201,7 @@ def ticketPage(request, show_nr):
         
     return render(request, "cinema/Ticket.html", context=context)
 
+@login_required(login_url = "login")
 def selectSeatsPage(request, show_nr):
     myShow = Show.objects.filter(id=show_nr)[0]
     av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
@@ -247,6 +248,7 @@ def selectSeatsPage(request, show_nr):
         
         return redirect("success")      
     return render(request, "cinema/SelectSeats.html", context=context)
-
+    
+@login_required(login_url = "login")
 def successPage(request):
     return render(request, "cinema/SuccessTicket.html")                          
