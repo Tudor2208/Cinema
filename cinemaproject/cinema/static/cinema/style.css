@@ -76,5 +76,42 @@ li a:hover {
   }
 
 
-
-
+  /* (A) SEAT & "COLOR CODE" */
+.seat {
+  text-align: center;
+  padding: 20px 10px;
+  border-radius: 10px;
+  background: #f1f1f1;
+}
+.taken { background: #df0000; color: #fff; }
+.selected { background: #87ff96; }
+ 
+/* (B) SEATS LAYOUT */
+#layout {
+  max-width: 400px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+  margin-bottom: 20px;
+}
+ 
+/* (C) LEGEND */
+#legend {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 50px auto ;
+}
+#legend .txt {
+  display: flex;
+  align-items: center;
+}
+ 
+/* (D) SAVE */
+#save {
+  font-size: 20px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 0;
+  color: #fff;
+  background: #00479f;
+}

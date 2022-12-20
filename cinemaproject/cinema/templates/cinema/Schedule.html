@@ -1,12 +1,13 @@
 {% load static %}
-<script src="{% static 'cinema/scripts.js' %}"></script>
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
 <html lang="en">
     
 <head>
-    <title>Acasă</title>
+    <title>Program</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="{% static 'cinema/scripts.js' %}"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 
 
@@ -52,7 +53,7 @@
        {% comment %} TODO: de adaugat si genre (ceva bug la adaugat din admin panel) {% endcomment %}
        <div align = "center" class = "shows">
             {% for movie in movies %}
-                <div style="border: solid; width: 70%; border-width:1; margin-left:2%" class = "show">
+                <div style="border: solid; width: 80%; border-width:1; margin-left:2%" class = "show">
                         <table style = "border:1px solid black">
                             <tr style = "background-color: #c5e8ce">
                                 <th >  
@@ -72,9 +73,9 @@
                             {% for film, shows in shows_list %}
                             {% if film.title == movie.title %}
                                     {% for show in shows %}
-                                        <button style = "margin-right: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 18px" type="button"><a style = "text-decoration: none" href = "#">{{show.start_hour}} ({{show.view_mode}})</a></button>
+                                        <button id = "{{show.id}}" style = "margin-right: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 14px" type="button"><a style = "text-decoration: none" href = "buyticket{{show.id}}">
+                                            {{show.date}} /  <span style = "color:#b30e40">{{show.start_hour}}</span>  / <span style = "font-weight:bold">{{show.view_mode}}</span>  </a></button>
                                     {% endfor %}
-                                    
                             {% else %}
                             {% endif %}
                             {% endfor %}
@@ -88,12 +89,15 @@
 
    
    <script> 
-    var curr = new Date;
-    var firstday = new Date(curr.setDate(curr.getDate() - curr.getDay()));
-    var lastday = new Date(curr.setDate(curr.getDate() - curr.getDay()+6));
-    const elmnt = document.getElementById("week"); 
-    document.getElementById("week").innerHTML = firstday.getFullYear() + "." + (firstday.getMonth()+1) + "." + (firstday.getDate()+1) + " - " +
-                                                lastday.getFullYear() + "." + (lastday.getMonth()+1) + "." + (lastday.getDate()+1);
+        var curr = new Date;
+        var firstday = new Date(curr.setDate(curr.getDate() - curr.getDay()));
+        var lastday = new Date(curr.setDate(curr.getDate() - curr.getDay()+6));
+        const elmnt = document.getElementById("week"); 
+        document.getElementById("week").innerHTML = firstday.getFullYear() + "." + (firstday.getMonth()+1) + "." + (firstday.getDate()+1) + " - " +
+                                                    lastday.getFullYear() + "." + (lastday.getMonth()+1) + "." + (lastday.getDate()+1);
+
+
+
     </script>
 </body>
 

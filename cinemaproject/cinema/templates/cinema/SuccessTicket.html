@@ -3,8 +3,10 @@
 <html lang="en">
 
 <head>
-    <title>Admin</title>
+    <title>Cumpărare bilet</title>
+
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <link rel="stylesheet" href="{% static 'cinema/3-seat-reserve.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -26,20 +28,21 @@
         <div class="navbar">
             <ul>
                 <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
-                <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a class = "active" href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
                 <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
-                <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'admin' %}
+                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+                {% endfor %}
 
             </ul>
         </div>
    </div>
 
-   
-
-
-    
+  <h1 align = "center"> Tranzacție efectuată cu succes!</h1>
 
 </body>
 
