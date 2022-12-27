@@ -134,11 +134,13 @@ def deleteMessagePage(request, msg_nr):
     instance.delete()
     return redirect('contact')
 
+
 def schedulePage(request):
     today = pendulum.now()
     start = today.start_of('week').to_date_string()
     end = today.end_of('week').to_date_string()
     shows = Show.objects.filter(date__range = [start, end])
+    
     movies = []
     for show in shows:
         if show.movie_ID not in movies:
