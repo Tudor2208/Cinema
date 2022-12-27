@@ -15,6 +15,6 @@ urlpatterns = [
     path("create-movie", views.createMoviePage, name = "create_movie"),
     path("create-show", views.createShowPage, name = "create_show"),
     path("buyticket<int:show_nr>", views.ticketPage, name = "ticket"),
-    path("selectseats<int:show_nr>", views.selectSeatsPage, name="seats"),
+    path("selectseats<str:show_booking>", views.selectSeatsPage, name="seats"),
     path("success", views.successPage, name="success")
 ]
