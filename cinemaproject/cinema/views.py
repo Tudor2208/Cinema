@@ -9,13 +9,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import displayusername
 from django.contrib.auth.models import User
-from .models import Message, Show, ShowSeat, Ticket, Booking
+from .models import Message, Show, ShowSeat, Ticket, Booking, Employee
 import pendulum
 from datetime import date, datetime
 import calendar
 from django.urls import reverse
 from fpdf import FPDF
+
+import calendar
+import datetime
+
+from django.utils import timezone
 # Create your views here.
+
+
 
 
 def index(request):
@@ -58,6 +65,30 @@ def profilePage(request):
                'last_login':request.user.last_login,
                'date_joined':request.user.date_joined,
                'password': request.user.password}
+
+    salary = -1
+
+    empl = Employee.objects.filter(user_id=request.user)
+
+    if len(empl) > 0:
+
+        salary = empl[0].salary
+
+    context = {'user': request.user,
+
+               'email': request.user.email,
+
+               'last_name': request.user.last_name,
+
+               'first_name': request.user.first_name,
+
+               'last_login': request.user.last_login,
+
+               'date_joined': request.user.date_joined,
+
+               'password': request.user.password,
+
+               'salary': salary}
                
 
     return render(request, 'cinema/Profile.html', context=context)
@@ -135,13 +166,11 @@ def deleteMessagePage(request, msg_nr):
     instance.delete()
     return redirect('contact')
 
-
 def schedulePage(request):
     today = pendulum.now()
     start = today.start_of('week').to_date_string()
     end = today.end_of('week').to_date_string()
     shows = Show.objects.filter(date__range = [start, end])
-    
     movies = []
     for show in shows:
         if show.movie_ID not in movies:
@@ -265,10 +294,72 @@ def modifyPrice(request):
 #     context['clients']= client_array
 #     return render(request, "cinema/ViewClients.html", context=context)
 
+# @allowed_users(allowed_roles=['admin'])
+# def showusername(request):
+#     displaynames = User.objects.all()
+#     return render(request, 'cinema/ViewClients.html', {"displayusername": displaynames})
+
 @allowed_users(allowed_roles=['admin'])
-def showusername(request):
-    displaynames = User.objects.all()
-    return render(request, 'cinema/ViewClients.html', {"displayusername": displaynames})
+def viewClients(request):
+    return render(request, "cinema/ViewClients.html", {'clients': User.objects.all()})
+
+
+@allowed_users(allowed_roles=['admin'])
+def viewStatistics(request):
+
+     now = timezone.now()
+     year = now.year
+
+     monthly_totals = []
+
+     for month in range(1,13):
+         num_days = calendar.monthrange(year, month)[1]
+         dates = [datetime.date(year, month, day) for day in range(1, num_days+1)]
+         shows = Show.objects.filter(date__range=(dates[0], dates[-1]))
+         for show in shows:
+            Booking.objects.filter(show_id = show)
+            bookings = Booking.objects.filter(show_id = show)
+            total = 0
+            for booking in bookings:
+                #tickets = booking.tickets.all()
+                #for ticket in tickets:
+                 total = booking.total_price + total
+         
+     monthly_totals.append({
+        
+        'total' : total,
+
+    })
+     context = {'monthly_totals': monthly_totals}
+     return render(request, "cinema/ViewStatistics.html", context=context)
+
+    
+    # beg_date = datetime.date(year, month)
+    # end_date = datetime(2022,12,31)
+
+    # today = pendulum.now()
+    # start = today.start_of('month').to_date_string()
+    # end = today.end_of('month').to_date_string()
+
+    # shows = Show.objects.filter(date__range = [beg_date, end_date])
+
+    # for show in shows:
+    #     Booking.objects.filter(show_id = show)
+    #     bookings = Booking.objects.filter(show_id = show)
+    #     total = 0
+    #     for booking in bookings:
+    #         total = booking.total_price + total
+
+    # context = {
+    #             'total_price' : total
+    # }
+
+
+
+
+
+
+
 
 @login_required(login_url = "login")
 def ticketPage(request, show_nr):
@@ -290,15 +381,12 @@ def ticketPage(request, show_nr):
             book.save()
             context['booking'] = book
 
-        return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)+"_"+str(book.id)) 
+        return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)) 
         
     return render(request, "cinema/Ticket.html", context=context)
 
 @login_required(login_url = "login")
-def selectSeatsPage(request, show_booking):
-    tokens = show_booking.split("_")
-    show_nr = int(tokens[0])
-    booking_id = int(tokens[1])
+def selectSeatsPage(request, show_nr):
     myShow = Show.objects.filter(id=show_nr)[0]
     av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
     all_seats = ShowSeat.objects.filter(show_ID = myShow)
@@ -308,7 +396,7 @@ def selectSeatsPage(request, show_booking):
     for seat in occupied_seats:
         occ_seats_nr.append(seat.seat_nr)
 
-    booking = Booking.objects.filter(id=booking_id)[0]
+    booking = Booking.objects.filter(show_id=myShow, user_id=request.user)[0]
     context = {'show_nr' : show_nr,
         'my_show' : myShow,
         'av_seats' : av_seats,
@@ -340,7 +428,7 @@ def selectSeatsPage(request, show_booking):
         pdf.cell(200, 10, txt = "Pret: " + str(booking.total_price) + " lei",
                 ln = 4, align = 'L')
 
-        pdf.output("../Bilet_" + str(request.user) + "_" + str(booking.id) + ".pdf")
+        pdf.output("../Bilet_" + str(request.user) + ".pdf")
         
         return redirect("success")      
     return render(request, "cinema/SelectSeats.html", context=context)

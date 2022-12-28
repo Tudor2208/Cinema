@@ -116,6 +116,22 @@
                 <td>Ultima logare</td>
                 <td>{{last_login}}</td>
               </tr>
+              
+              {% if salary != -1%}
+
+        <tr>
+
+          <th scope="row">6</th>
+
+          <td>Salariu</td>
+
+          <td>{{salary}}</td>
+
+        </tr>
+
+        {%else %}
+
+        {% endif %}
 
             </tbody>
           </table>

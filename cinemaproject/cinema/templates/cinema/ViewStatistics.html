@@ -1,0 +1,137 @@
+
+
+{% load static %}
+<script src="{% static 'cinema/scripts.js' %}"></script>
+<html lang="en">
+
+<head>
+    <title>Profil</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+
+
+<body>
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        {% if user.is_authenticated%}
+            <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
+        {% else %}
+        {% endif %}
+        
+    </div>
+
+
+
+<div class="content">
+    <div class="navbar">
+        <ul>
+            <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+            <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+            <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+            <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
+            {% for group_for in request.user.groups.all %}
+            {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+            {% endif %}
+
+            {% if group_for.name == 'admin' %}
+                <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+            {% endif %}
+
+        {% endfor %}
+        </ul>
+    </div>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Luna</th>
+        <th scope="col">Incasarile</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Ianuarie</td>
+        <td>{{total}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Februarie</td>
+        <td>{{total}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>Martie</td>
+        <td>{{total}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">4</th>
+        <td>Aprilie</td>
+        <td>{{total}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">5</th>
+        <td>Mai</td>
+        <td>{{total}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">6</th>
+        <td>Iunie</td>
+        <td>{{total}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">7</th>
+        <td>Iulie</td>
+        <td>{{total}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">8</th>
+        <td>August</td>
+        <td>{{total}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">9</th>
+        <td>Septembrie</td>
+        <td>{{total}}</td>
+      </tr>
+      <tr>
+        <th scope="row">10</th>
+        <td>Octombrie</td>
+        <td>{{total}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">11</th>
+        <td>Noiembrie</td>
+        <td>{{monthly_totals}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">12</th>
+        <td>Decembrie</td>
+        <td>{{monthly_totals}}</td>
+        
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  
+</body>
+
+</html>
