@@ -135,7 +135,7 @@ def contactPage(request):
     has_notif(dict, request)
     return render(request, 'cinema/Contact.html', context=dict)
 
-@allowed_users(allowed_roles=['admin'])
+@login_required(login_url = "login")
 def deleteMessagePage(request, msg_nr):
     instance = Message.objects.get(id=msg_nr)
     instance.delete()
@@ -146,7 +146,7 @@ def schedulePage(request):
     today = pendulum.now()
     start = today.start_of('week').to_date_string()
     end = today.end_of('week').to_date_string()
-    shows = Show.objects.filter(date__range = [start, end])
+    shows = Show.objects.filter(date__range = [start, end], date__gte=date.today())
     
     movies = []
     for show in shows:
@@ -155,7 +155,7 @@ def schedulePage(request):
     
     shows_list = []
     for movie in movies:
-        movie_shows = Show.objects.filter(movie_ID = movie, date__range = [start, end])
+        movie_shows = Show.objects.filter(movie_ID = movie, date__range = [start, end], date__gte=date.today())
         t = (movie, movie_shows)
         shows_list.append(t)
 

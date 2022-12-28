@@ -93,11 +93,12 @@ class Booking(models.Model):
 class Notification(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     text = models.CharField(max_length=300)
-    time = models.TimeField()
+    time = models.TimeField(default=timezone.now)
     sent_date = models.DateField(auto_now_add=True, auto_now=False)
 
     def __str__(self):
         return "Ptr " + str(self.user_id) + ": " + self.text + " (" + str(self.sent_date) + ")"
+
 
 @receiver(post_save, sender=Show)
 def hear_signal(sender, instance, **kwargs):
@@ -110,3 +111,13 @@ def hear_signal(sender, instance, **kwargs):
             showSeat = ShowSeat(show_ID=instance, booking_ID=mock_booking, seat_nr=i+1, booked=False)
             showSeat.save()   
     return
+
+@receiver(post_save, sender=Message)
+def hear_signal_message(sender, instance, **kwargs):
+    if not kwargs.get('created'):
+        user = User.objects.get(username=instance.sender)
+        Notification(user_id=user, text="Un angajat tocmai ti-a raspuns la un mesaj!").save()
+
+    return
+
+    #TODO: de adaugat mai multe tipuri de notificari
