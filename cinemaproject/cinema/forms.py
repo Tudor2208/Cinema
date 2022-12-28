@@ -22,4 +22,19 @@ class ShowForm(forms.ModelForm):
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
-        fields = "__all__"        
+        fields = "__all__"     
+
+class EmployeeForm(forms.ModelForm):
+    class Meta: 
+        model = Employee
+        fields = "__all__"   
+
+class ClientsForm(forms.ModelForm):
+    class Meta: 
+        model = User
+        fields = "__all__"  
+
+class PriceForm(forms.ModelForm):
+    class Meta: 
+        model = Ticket
+        fields = "__all__"  

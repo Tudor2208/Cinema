@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm, MovieForm, ShowForm, BookingForm
+from .forms import ClientsForm, CreateUserForm, EmployeeForm, MovieForm, PriceForm, ShowForm, BookingForm
 from .decorators import *
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import displayusername
 from django.contrib.auth.models import User
 from .models import Message, Show, ShowSeat, Ticket, Booking
 import pendulum
@@ -177,6 +178,96 @@ def createShowPage(request):
     context['form']= form
     return render(request, "cinema/CreateShow.html", context=context)
 
+@allowed_users(allowed_roles=['admin'])
+def addEmployee(request):
+    context ={}
+    form = EmployeeForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        form.save()
+        return redirect("admin")
+    context['form']= form
+    return render(request, "cinema/AddEmployee.html", context=context)
+
+@allowed_users(allowed_roles=['admin'])
+def modifyPrice(request):
+    tickets = Ticket.objects.all()
+
+    if request.method == "POST":
+        price_student = request.POST.get('modify-price-Student')
+        price_adult = request.POST.get('modify-price-Adult')
+        price_elev = request.POST.get('modify-price-Elev')
+        price_pensionar = request.POST.get('modify-price-Pensionar')
+        price_copil = request.POST.get('modify-price-Copil')
+        print(price_copil)
+        print(price_adult)
+        print(price_elev)
+        print(price_pensionar)
+        print(price_student)
+
+
+        if price_student != None:
+                record = Ticket.objects.filter(category='Student')[0]
+                record.price = price_student
+                record.save(update_fields=['price'])
+
+        if price_adult != None:
+                record = Ticket.objects.filter(category='Adult')[0]
+                record.price = price_adult
+                record.save(update_fields=['price'])
+
+        if price_elev != None:
+                record = Ticket.objects.filter(category='Elev')[0]
+                record.price = price_elev
+                record.save(update_fields=['price'])
+
+        if price_pensionar != None:
+                record = Ticket.objects.filter(category='Pensionar')[0]
+                record.price = price_pensionar
+                record.save(update_fields=['price'])
+        
+        if price_copil != None:
+                record = Ticket.objects.filter(category='Copil')[0]
+                record.price = price_copil
+                record.save(update_fields=['price'])
+
+
+
+
+
+    # context ={
+    #           'price': request.price,
+    #           'category': request.category
+    #  }
+
+    # form = PriceForm(request.POST or None, request.FILES or None)
+    # if form.is_valid():
+    #     form.save()
+    #     return redirect("admin")
+
+
+    return render(request, "cinema/ModifyTicketsPrice.html", {"tickets":tickets})
+
+
+
+
+# @allowed_users(allowed_roles=['admin'])
+# def viewClients(request):
+#     clients = User.objects.all()
+#     client_array = []
+#     context ={ 'all_clients' : clients
+#     }
+#     form = ClientsForm(request.POST or None, request.FILES or None)
+#     if form.is_valid():
+#         form.save()
+#         return redirect("admin")
+#     context['clients']= client_array
+#     return render(request, "cinema/ViewClients.html", context=context)
+
+@allowed_users(allowed_roles=['admin'])
+def showusername(request):
+    displaynames = User.objects.all()
+    return render(request, 'cinema/ViewClients.html', {"displayusername": displaynames})
+
 @login_required(login_url = "login")
 def ticketPage(request, show_nr):
     myShow = Show.objects.filter(id=show_nr)[0]
@@ -251,4 +342,6 @@ def selectSeatsPage(request, show_nr):
     
 @login_required(login_url = "login")
 def successPage(request):
-    return render(request, "cinema/SuccessTicket.html")                          
+    return render(request, "cinema/SuccessTicket.html")        
+
+

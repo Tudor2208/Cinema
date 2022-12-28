@@ -1,9 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.contrib.auth.models import User, Group
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import *
+
 # Create your models here.
+
+
+class displayusername(models.Model):
+    username=models.CharField(max_length=100)
 
 class Message(models.Model):
     sender = models.CharField(max_length=30)
@@ -94,10 +99,30 @@ class Booking(models.Model):
 def hear_signal(sender, instance, **kwargs):
     if kwargs.get('created'):
         cinema_hall = CinemaHall.objects.filter(id=instance.cinema_hall_ID.id)[0]
-        mock_booking = Booking.objects.filter(id=4)[0]
+        mock_booking = Booking.objects.filter(id=1)[0]
         seats = cinema_hall.nr_of_seats
         for i in range(seats):
             #booking 4 - e hardcodat, inseamna NULL
             showSeat = ShowSeat(show_ID=instance, booking_ID=mock_booking, seat_nr=i+1, booked=False)
             showSeat.save()   
     return
+
+@receiver(post_save, sender=Employee)
+def hear_signal_employee(sender, instance, **kwargs):
+    if kwargs.get('created'):
+        user = User.objects.get(username=instance.user_id)
+        role = Group.objects.get(name = 'employee')
+        role.user_set.add(user)
+        employees = Employee.objects.filter(user_id=instance.user_id)
+        print(employees)
+        if len(employees) > 1:
+            employees[0].delete()
+            
+    
+# @receiver(pre_save, sender=Employee) 
+# def hear_signal_employee2(sender, instance, **kwargs):
+#     if kwargs.get('pre_save'):
+#         employee = Employee.objects.get(user_id=instance.username)
+#         print(employee)
+#         if employee is not None:
+#             employee.delete()
