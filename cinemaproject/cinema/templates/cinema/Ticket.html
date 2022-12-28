@@ -70,13 +70,19 @@
     </table>
         <h4 id = "pret"> PREȚ: 0 lei</h4>
         <br> <br>
-        <input id="submitbtn" class = "button" type="submit" name="next" value ="Next" disabled>
+        {% if av_seats != 0 %}
+            <input id="submitbtn" class = "button" type="submit" name="next" value ="Next" disabled>
+        {% else %}
+            <h3 align = "center" style = "color:#ff0000" > Ne cerem scuze, dar nu mai avem locuri disponibile! </h3>    
+        {% endif %}
+       
         <input id="total_price" type = "text" name = "total_price" value = 0 hidden>
         <input id="total_seats" type = "text" name = "total_seats" value = 0 hidden>
     </form>
 
 
   </div>  
+
    
   <script>
     var inputs = document.getElementsByTagName("input");

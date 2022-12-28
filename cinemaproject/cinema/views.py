@@ -135,11 +135,13 @@ def deleteMessagePage(request, msg_nr):
     instance.delete()
     return redirect('contact')
 
+
 def schedulePage(request):
     today = pendulum.now()
     start = today.start_of('week').to_date_string()
     end = today.end_of('week').to_date_string()
     shows = Show.objects.filter(date__range = [start, end])
+    
     movies = []
     for show in shows:
         if show.movie_ID not in movies:
@@ -288,12 +290,15 @@ def ticketPage(request, show_nr):
             book.save()
             context['booking'] = book
 
-        return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)) 
+        return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)+"_"+str(book.id)) 
         
     return render(request, "cinema/Ticket.html", context=context)
 
 @login_required(login_url = "login")
-def selectSeatsPage(request, show_nr):
+def selectSeatsPage(request, show_booking):
+    tokens = show_booking.split("_")
+    show_nr = int(tokens[0])
+    booking_id = int(tokens[1])
     myShow = Show.objects.filter(id=show_nr)[0]
     av_seats = ShowSeat.objects.filter(show_ID = myShow, booked=False).count()
     all_seats = ShowSeat.objects.filter(show_ID = myShow)
@@ -303,7 +308,7 @@ def selectSeatsPage(request, show_nr):
     for seat in occupied_seats:
         occ_seats_nr.append(seat.seat_nr)
 
-    booking = Booking.objects.filter(show_id=myShow, user_id=request.user)[0]
+    booking = Booking.objects.filter(id=booking_id)[0]
     context = {'show_nr' : show_nr,
         'my_show' : myShow,
         'av_seats' : av_seats,
@@ -335,7 +340,7 @@ def selectSeatsPage(request, show_nr):
         pdf.cell(200, 10, txt = "Pret: " + str(booking.total_price) + " lei",
                 ln = 4, align = 'L')
 
-        pdf.output("../Bilet_" + str(request.user) + ".pdf")
+        pdf.output("../Bilet_" + str(request.user) + "_" + str(booking.id) + ".pdf")
         
         return redirect("success")      
     return render(request, "cinema/SelectSeats.html", context=context)
