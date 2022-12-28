@@ -1,16 +1,13 @@
 {% load static %}
-
 <html lang="en">
 
 <head>
-    <title>Cumpărare bilet</title>
-
+    <title>Notificări</title>
+    <script src="{% static 'cinema/scripts.js' %}"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
-    <link rel="stylesheet" href="{% static 'cinema/3-seat-reserve.css' %}">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 
 
@@ -33,21 +30,37 @@
         <div class="navbar">
             <ul>
                 <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
-                <li><a class = "active" href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
-                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
                 {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin'%}
+                        <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                    {% endif %}
+
                     {% if group_for.name == 'admin' %}
                         <li><a href="admin" style = "color: #cc0000">Admin </a></li>
                     {% endif %}
-                {% endfor %}
 
+                {% endfor %}
+                
             </ul>
         </div>
-   </div>
 
-  <h1 align = "center"> Tranzacție efectuată cu succes!</h1>
+
+    <div align = "center" style = "">
+        {% for notification in my_notifications %}
+            <p style = "font-weight:bold">{{notification.sent_date}}, {{notification.time}}</p>
+            <div align = "center" style = "border:solid; width:50%; background-color:#c5e8ce">
+                <p style = "font-size:25px; font-family:'Times New Roman'">{{notification.text}}</p>
+                <button style = "border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="button"><a style = "text-decoration: none; color:#000000" href = "delete/notification/{{notification.id}}">sterge</a></button>
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+
+  
+
 
 </body>
 

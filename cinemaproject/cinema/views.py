@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Message, Show, ShowSeat, Ticket, Booking
+from .models import Message, Show, ShowSeat, Ticket, Booking, Notification
 import pendulum
 from datetime import date, datetime
 import calendar
@@ -16,9 +16,14 @@ from django.urls import reverse
 from fpdf import FPDF
 # Create your views here.
 
+def has_notif(context, request):
+    context['has_notif'] = Notification.objects.filter(user_id=request.user).count() > 0
 
 def index(request):
-    return render(request, 'cinema/Homepage.html')
+    context={}
+    if request.user.is_authenticated:
+        has_notif(context, request)
+    return render(request, 'cinema/Homepage.html', context=context)
 
 def profilePage(request): 
     if not request.user.is_authenticated:
@@ -58,7 +63,7 @@ def profilePage(request):
                'date_joined':request.user.date_joined,
                'password': request.user.password}
                
-
+    has_notif(context, request)
     return render(request, 'cinema/Profile.html', context=context)
 
 def loginPage(request):
@@ -110,6 +115,7 @@ def employeePage(request):
 
     all_messages = Message.objects.all()
     context = {'messages_list' : all_messages}
+    has_notif(context, request)
     return render(request, 'cinema/Employee.html', context=context)
 
 @allowed_users(allowed_roles=['admin'])
@@ -126,6 +132,7 @@ def contactPage(request):
        
     messages = Message.objects.filter(sender = request.user)
     dict = {'messages' : messages}
+    has_notif(dict, request)
     return render(request, 'cinema/Contact.html', context=dict)
 
 @allowed_users(allowed_roles=['admin'])
@@ -156,7 +163,7 @@ def schedulePage(request):
     context = { 'movies' : movies, 
                 'shows_list' : shows_list 
                 }
-    
+    has_notif(context, request)
     return render(request, 'cinema/Schedule.html', context=context)
 
 @allowed_users(allowed_roles=['admin', 'employee'])
@@ -167,6 +174,7 @@ def createMoviePage(request):
         form.save()
         return redirect("employee")
     context['form']= form
+    has_notif(context, request)
     return render(request, "cinema/CreateMovie.html", context=context)
 
 @allowed_users(allowed_roles=['admin', 'employee'])
@@ -177,6 +185,7 @@ def createShowPage(request):
         form.save()
         return redirect("employee")
     context['form']= form
+    has_notif(context, request)
     return render(request, "cinema/CreateShow.html", context=context)
 
 @login_required(login_url = "login")
@@ -200,7 +209,8 @@ def ticketPage(request, show_nr):
             context['booking'] = book
 
         return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)+"_"+str(book.id)) 
-        
+
+    has_notif(context, request)    
     return render(request, "cinema/Ticket.html", context=context)
 
 @login_required(login_url = "login")
@@ -251,9 +261,22 @@ def selectSeatsPage(request, show_booking):
 
         pdf.output("../Bilet_" + str(request.user) + "_" + str(booking.id) + ".pdf")
         
-        return redirect("success")      
+        return redirect("success")
+
+    has_notif(context, request)          
     return render(request, "cinema/SelectSeats.html", context=context)
     
 @login_required(login_url = "login")
 def successPage(request):
-    return render(request, "cinema/SuccessTicket.html")                          
+    return render(request, "cinema/SuccessTicket.html")
+
+def notificationPage(request):
+    my_notifications = Notification.objects.filter(user_id=request.user)
+    context = {'my_notifications' : my_notifications}
+    has_notif(context, request)
+    return render(request, "cinema/Notification.html", context=context)
+
+def deleteNotificationPage(request, notif_nr):
+    instance = Notification.objects.get(id=notif_nr)
+    instance.delete()
+    return redirect('notification')                                  

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import *
+from django.utils import timezone
 # Create your models here.
 
 class Message(models.Model):
@@ -89,6 +90,14 @@ class Booking(models.Model):
     def __str__(self):
         return str(self.show_id) + " / " + str(self.user_id) + " / " + str(self.nr_of_seats) + " / " + str(self.booking_time) + " / " + str(self.total_price) + " lei"    
 
+class Notification(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    text = models.CharField(max_length=300)
+    time = models.TimeField()
+    sent_date = models.DateField(auto_now_add=True, auto_now=False)
+
+    def __str__(self):
+        return "Ptr " + str(self.user_id) + ": " + self.text + " (" + str(self.sent_date) + ")"
 
 @receiver(post_save, sender=Show)
 def hear_signal(sender, instance, **kwargs):
