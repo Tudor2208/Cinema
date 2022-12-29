@@ -1,9 +1,8 @@
 {% load static %}
-
 <html lang="en">
 
 <head>
-    <title>Adaugare film</title>
+    <title>Modificare pret</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -15,16 +14,17 @@
 <body>
     <div class="header">
         <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated%}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
         {% endif %}
-         
+
         {% if has_notif == True %}
             <a href="notifications" style = "color:#ff0000" ><i class="fa fa-bell"></i></a>
         {% else %}
             <a href="notifications" style = "color:#ffffff" ><i class="fa fa-bell"></i></a>
         {% endif %} 
+        
     </div>
 
     <div class="content">
@@ -34,31 +34,48 @@
                 <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
-                <li><a class = "active" href="employee" style = "color: #3333cc">Angajat </a></li>
                 {% for group_for in request.user.groups.all %}
-                    {% if group_for.name == 'admin' %}
-                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
-                    {% endif %}
-                {% endfor %}
+                {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                    <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                {% endif %}
 
+                {% if group_for.name == 'admin' %}
+                    <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                {% endif %}
+
+            {% endfor %}
             </ul>
         </div>
-   </div>
+        <br><br>
 
-   <h2 align = "center"> Adăugare film </h2>
-   <br>
-   <form align = "center" method="POST">
-    {% csrf_token %}
-        <p style = "font-size: 18px">Titlu {{form.title}}</p>
-        <p style = "font-size: 18px">Durata {{form.duration}}</p>
-        <p style = "font-size: 18px">Gen {{form.genre}} </p>
-        <p style = "font-size: 18px">Regizor {{form.director}} </p>
-        <p style = "font-size: 18px">Dată lansare {{form.release_date}} </p>
-        <p style = "font-size: 18px">Descriere {{form.description}} </p>
-        <p style = "font-size: 18px">Link trailer {{form.link_trailer}} </p>
-    <button type="submit" class="save btn btn-default">Adaugă</button>  
-   </form>
-   
+        <h3 align="center" class="m-10">Modificare preț bilete</h3>
+        <div>
+          <table align = "center" style="width:50%" class = "table">
+              <tr>
+                <th>Categorie</th>
+                <th>Preț</th>
+              
+              </tr>
+                  {% for ticket in tickets %}
+                      <tr>
+                          <td>{{ticket.category}}</td>
+                          <td id = {{ticket.id}}> {{ticket.price}} lei</td>
+                          <td>
+                            <form method="POST" action="">
+                              {%csrf_token%}
+                              <input type="text" name="modify-price-{{ticket.category}}" placeholder = "new price" value = {{price}}>
+                              <input type="submit" name="submit" value ="modifică">
+                            </form>
+                        </td>
+                      </tr>
+                     
+                  {% endfor %}
+                  
+          </table>
+          
+        </div>  
+              
+   </div>
 
 </body>
 

@@ -1,8 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import *
+from django.utils import timezone
 # Create your models here.
 
 class Message(models.Model):
@@ -89,6 +90,15 @@ class Booking(models.Model):
     def __str__(self):
         return str(self.show_id) + " / " + str(self.user_id) + " / " + str(self.nr_of_seats) + " / " + str(self.booking_time) + " / " + str(self.total_price) + " lei"    
 
+class Notification(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    text = models.CharField(max_length=300)
+    time = models.TimeField(default=timezone.now)
+    sent_date = models.DateField(auto_now_add=True, auto_now=False)
+
+    def __str__(self):
+        return "Ptr " + str(self.user_id) + ": " + self.text + " (" + str(self.sent_date) + ")"
+
 
 @receiver(post_save, sender=Show)
 def hear_signal(sender, instance, **kwargs):
@@ -101,3 +111,28 @@ def hear_signal(sender, instance, **kwargs):
             showSeat = ShowSeat(show_ID=instance, booking_ID=mock_booking, seat_nr=i+1, booked=False)
             showSeat.save()   
     return
+
+@receiver(post_save, sender=Message)
+def hear_signal_message(sender, instance, **kwargs):
+    if not kwargs.get('created'):
+        user = User.objects.get(username=instance.sender)
+        Notification(user_id=user, text="Un angajat tocmai ti-a raspuns la un mesaj!").save()
+
+    return
+
+    #TODO: de adaugat mai multe tipuri de notificari
+
+
+@receiver(post_save, sender=Employee)
+def hear_signal_employee(sender, instance, **kwargs):
+    if kwargs.get('created'):
+        user = User.objects.get(username=instance.user_id)
+        role = Group.objects.get(name = 'employee')
+        role.user_set.add(user)
+        employees = Employee.objects.filter(user_id=instance.user_id)
+        
+        if len(employees) > 1:
+            employees[0].delete()
+            Notification(user_id=user, text="Salariul ți-a fost actualizat! Noul salariu: " + str(employees[1].salary) + " lei").save()    
+        else:
+            Notification(user_id=user, text="Salariul ți-a fost actualizat! Noul salariu: " + str(employees[0].salary) + " lei").save()    
