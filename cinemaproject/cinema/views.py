@@ -15,9 +15,11 @@ from datetime import date, datetime
 import calendar
 from django.urls import reverse
 from fpdf import FPDF
+import datetime
+
 
 import calendar
-import datetime
+
 
 from django.utils import timezone
 # Create your views here.
@@ -311,6 +313,18 @@ def viewStatistics(request):
      year = now.year
 
      monthly_totals = []
+     movies_by_month = {}
+
+    #  movies = Show.objects.all()
+    #  for movie in movies:
+    #      Booking.objects.filter(show_id = movie)
+    #      bookings = Booking.objects.filter(show_id = movie)
+    #      for booking in bookings:
+    #         month = booking.booking_time
+    #         if month not in movies_by_month:
+    #              movies_by_month[month] = movie
+    #         elif movie.views > movies_by_month[month].views:
+    #              movies_by_month[month] = movie
 
      for month in range(1,13):
          num_days = calendar.monthrange(year, month)[1]
@@ -321,16 +335,13 @@ def viewStatistics(request):
             bookings = Booking.objects.filter(show_id = show)
             total = 0
             for booking in bookings:
-                #tickets = booking.tickets.all()
-                #for ticket in tickets:
                  total = booking.total_price + total
          
-     monthly_totals.append({
-        
-        'total' : total,
-
-    })
-     context = {'monthly_totals': monthly_totals}
+                 monthly_totals.append(total)
+                 print(monthly_totals)
+     context = {'monthly_totals': monthly_totals,
+                'movies_by_month' : movies_by_month,
+     }
      return render(request, "cinema/ViewStatistics.html", context=context)
 
     
@@ -355,12 +366,6 @@ def viewStatistics(request):
     # }
 
 
-
-
-
-
-
-
 @login_required(login_url = "login")
 def ticketPage(request, show_nr):
     myShow = Show.objects.filter(id=show_nr)[0]
@@ -375,7 +380,7 @@ def ticketPage(request, show_nr):
     if request.method == 'POST':
         seats = request.POST.get('total_seats')
         price = request.POST.get('total_price')
-        curr_time = datetime.now()
+        curr_time = datetime.datetime.now()
         if seats != None:
             book = Booking(show_id=myShow, user_id=request.user, nr_of_seats=seats, booking_time=curr_time, total_price=price)
             book.save()
