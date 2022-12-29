@@ -18,5 +18,9 @@ urlpatterns = [
     path("selectseats<str:show_booking>", views.selectSeatsPage, name="seats"),
     path("success", views.successPage, name="success"),
     path("notifications", views.notificationPage, name="notification"),
-    path("delete/notification/<int:notif_nr>", views.deleteNotificationPage, name ="delete_notification")
+    path("delete/notification/<int:notif_nr>", views.deleteNotificationPage, name ="delete_notification"),
+    path("view-clients", views.viewClients, name="clients"),
+    path("add-employee", views.addEmployee, name="add-employee"),
+    path("modify-price", views.modifyPrice, name="modify-price"),
+    path("view-statistics", views.viewStatistics, name="view-statistics")
 ]

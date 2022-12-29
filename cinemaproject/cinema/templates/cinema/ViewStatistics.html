@@ -1,0 +1,158 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <title>Statistici</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+
+
+<body>
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        {% if user.is_authenticated%}
+            <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
+        {% else %}
+        {% endif %}
+        
+        {% if has_notif == True %}
+            <a href="notifications" style = "color:#ff0000" ><i class="fa fa-bell"></i></a>
+        {% else %}
+            <a href="notifications" style = "color:#ffffff" ><i class="fa fa-bell"></i></a>
+        {% endif %} 
+    </div>
+
+
+
+<div class="content">
+    <div class="navbar">
+        <ul>
+            <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+            <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+            <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+            <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
+            {% for group_for in request.user.groups.all %}
+            {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+            {% endif %}
+
+            {% if group_for.name == 'admin' %}
+                <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+            {% endif %}
+
+        {% endfor %}
+        </ul>
+    </div>
+
+
+    <h3 align="center" class="m-10">Statistici</h3>    
+<table align = "center" style = "width:70%" class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Luna</th>
+        <th scope="col">Incasările</th>
+        <th scope="col">Cel mai vizionat film</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Ianuarie</td>
+        <td>{{l1}} lei</td>
+        <td>{{v1}}</td>
+
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Februarie</td>
+        <td>{{l2}} lei</td>
+        <td>{{v2}}</td>
+
+
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>Martie</td>
+        <td>{{l3}} lei</td>
+        <td>{{v3}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">4</th>
+        <td>Aprilie</td>
+        <td>{{l4}} lei</td>
+        <td>{{v4}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">5</th>
+        <td>Mai</td>
+        <td>{{l5}} lei</td>
+        <td>{{v5}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">6</th>
+        <td>Iunie</td>
+        <td>{{l6}} lei</td>
+        <td>{{v6}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">7</th>
+        <td>Iulie</td>
+        <td>{{l7}} lei</td>
+        <td>{{v7}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">8</th>
+        <td>August</td>
+        <td>{{l8}} lei</td>
+        <td>{{v8}}</td>
+        
+      </tr>
+      <tr>
+        <th scope="row">9</th>
+        <td>Septembrie</td>
+        <td>{{l9}} lei</td>
+        <td>{{v9}}</td>
+
+
+      </tr>
+      <tr>
+        <th scope="row">10</th>
+        <td>Octombrie</td>
+        <td>{{l10}} lei</td>
+        <td>{{v10}}</td>
+       
+      </tr>
+      <tr>
+        <th scope="row">11</th>
+        <td>Noiembrie</td>
+        <td>{{l11}} lei</td>
+        <td>{{v11}}</td>
+        
+       
+      </tr>
+      <tr>
+        <th scope="row">12</th>
+        <td>Decembrie</td>
+        <td>{{l12}} lei</td>
+        <td>{{v12}}</td>
+        
+      </tr>
+    </tbody>
+
+  </table>
+  </div>
+
+</body>
+
+</html>

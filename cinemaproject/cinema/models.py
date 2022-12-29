@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import *
@@ -121,3 +121,18 @@ def hear_signal_message(sender, instance, **kwargs):
     return
 
     #TODO: de adaugat mai multe tipuri de notificari
+
+
+@receiver(post_save, sender=Employee)
+def hear_signal_employee(sender, instance, **kwargs):
+    if kwargs.get('created'):
+        user = User.objects.get(username=instance.user_id)
+        role = Group.objects.get(name = 'employee')
+        role.user_set.add(user)
+        employees = Employee.objects.filter(user_id=instance.user_id)
+        
+        if len(employees) > 1:
+            employees[0].delete()
+            Notification(user_id=user, text="Salariul ți-a fost actualizat! Noul salariu: " + str(employees[1].salary) + " lei").save()    
+        else:
+            Notification(user_id=user, text="Salariul ți-a fost actualizat! Noul salariu: " + str(employees[0].salary) + " lei").save()    

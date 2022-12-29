@@ -1,19 +1,20 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm, MovieForm, ShowForm, BookingForm
+from .forms import CreateUserForm, MovieForm, ShowForm, BookingForm, EmployeeForm
 from .decorators import *
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Message, Show, ShowSeat, Ticket, Booking, Notification
+from .models import Message, Show, ShowSeat, Ticket, Booking, Notification, Employee
 import pendulum
 from datetime import date, datetime
 import calendar
 from django.urls import reverse
 from fpdf import FPDF
+from django.utils import timezone
 # Create your views here.
 
 def has_notif(context, request):
@@ -55,13 +56,19 @@ def profilePage(request):
             record.last_name = lastname
             record.save(update_fields=['last_name'])
 
+    salary = -1
+    empl = Employee.objects.filter(user_id=request.user)
+    if len(empl) > 0:
+        salary = empl[0].salary
+
     context = {'user':request.user, 
                'email':request.user.email,
                'last_name':request.user.last_name,
                'first_name':request.user.first_name,
                'last_login':request.user.last_login,
                'date_joined':request.user.date_joined,
-               'password': request.user.password}
+               'password': request.user.password,
+               'salary' : salary}
                
     has_notif(context, request)
     return render(request, 'cinema/Profile.html', context=context)
@@ -279,4 +286,94 @@ def notificationPage(request):
 def deleteNotificationPage(request, notif_nr):
     instance = Notification.objects.get(id=notif_nr)
     instance.delete()
-    return redirect('notification')                                  
+    return redirect('notification')
+
+@allowed_users(allowed_roles=['admin'])
+def viewClients(request):
+    return render(request, "cinema/Clients.html", {'clients': User.objects.all()})   
+
+@allowed_users(allowed_roles=['admin'])
+def addEmployee(request):
+    context ={}
+    form = EmployeeForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        form.save()
+        return redirect("admin")
+    context['form']= form
+    return render(request, "cinema/AddEmployee.html", context=context)                  
+
+@allowed_users(allowed_roles=['admin'])
+def modifyPrice(request):
+    tickets = Ticket.objects.all()
+
+    if request.method == "POST":
+        price_student = request.POST.get('modify-price-Student')
+        price_adult = request.POST.get('modify-price-Adult')
+        price_elev = request.POST.get('modify-price-Elev')
+        price_pensionar = request.POST.get('modify-price-Pensionar')
+        price_copil = request.POST.get('modify-price-Copil')
+
+        if price_student != None:
+                record = Ticket.objects.filter(category='Student')[0]
+                record.price = price_student
+                record.save(update_fields=['price'])
+
+        if price_adult != None:
+                record = Ticket.objects.filter(category='Adult')[0]
+                record.price = price_adult
+                record.save(update_fields=['price'])
+
+        if price_elev != None:
+                record = Ticket.objects.filter(category='Elev')[0]
+                record.price = price_elev
+                record.save(update_fields=['price'])
+
+        if price_pensionar != None:
+                record = Ticket.objects.filter(category='Pensionar')[0]
+                record.price = price_pensionar
+                record.save(update_fields=['price'])
+        
+        if price_copil != None:
+                record = Ticket.objects.filter(category='Copil')[0]
+                record.price = price_copil
+                record.save(update_fields=['price'])
+
+    return render(request, "cinema/ModifyTicketPrice.html", {"tickets":tickets})   
+
+
+@allowed_users(allowed_roles=['admin'])
+def viewStatistics(request):
+    now = timezone.now()
+    year = now.year
+    context = {}
+
+    for month in range(1,13):
+        num_days = calendar.monthrange(year, month)[1]
+        dates = [date(year, month, day) for day in range(1, num_days+1)]
+        shows = Show.objects.filter(date__range=(dates[0], dates[-1]))
+        total_sum = 0
+        views_dict = {}
+        for show in shows:
+            bookings = Booking.objects.filter(show_id = show)
+            bought_tickets = ShowSeat.objects.filter(show_ID=show, booked=True).count()
+            movie = show.movie_ID
+            if movie not in views_dict:
+                views_dict[movie] = bought_tickets
+            else:
+                views_dict[movie] = views_dict[movie] + bought_tickets    
+
+            for booking in bookings:
+                total_sum = booking.total_price + total_sum
+
+        max_views = 0
+        max_movie = ""
+        for key in views_dict:
+            if views_dict[key] > max_views:
+                max_views = views_dict[key]
+                max_movie = key
+
+        context['v'+str(month)] = max_movie     
+        context['l'+str(month)] = total_sum
+
+       
+    return render(request, "cinema/ViewStatistics.html", context=context)

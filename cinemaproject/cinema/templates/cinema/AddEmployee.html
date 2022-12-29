@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Admin</title>
+    <title>Adaugare angajat</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -19,7 +19,12 @@
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
         {% endif %}
-        
+
+        {% if has_notif == True %}
+            <a href="notifications" style = "color:#ff0000" ><i class="fa fa-bell"></i></a>
+        {% else %}
+            <a href="notifications" style = "color:#ffffff" ><i class="fa fa-bell"></i></a>
+        {% endif %} 
     </div>
 
     <div class="content">
@@ -30,19 +35,27 @@
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
                 <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
-                <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'admin' %}
+                        <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+                {% endfor %}
 
             </ul>
         </div>
    </div>
 
-   <div align = "center">
-        <button style = "border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 22px" type="button"><a style = "color: #000000; text-decoration: none" href = "add-employee">Modificare angajați</a></button>
-        <button style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 22px"  type="button"><a style = "color: #000000; text-decoration: none" href = "view-clients">Vizualizare clienți</a></button>
-        <button style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 22px" type="button"><a style = "color: #000000; text-decoration: none" href = "modify-price">Modificare preț bilete</a></button>
-        <button style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 22px" type="button"><a style = "color: #000000; text-decoration: none" href = "view-statistics">Vizualizare statistici</a></button>
-    </div>    
-
+   <h2 align = "center"> Adăugare / Modificare angajat </h2>
+   <br>
+   <form align = "center" method="POST">
+    {% csrf_token %}
+        
+        <p style = "font-size: 18px">Utilizator {{form.user_id}} </p>
+        <p style = "font-size: 18px">Salariu(lei) {{form.salary}}</p>
+        
+    <button type="submit" class="save btn btn-default">Adaugă</button>  
+   </form>
+   
 </body>
 
 </html>

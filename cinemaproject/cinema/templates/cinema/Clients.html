@@ -1,0 +1,89 @@
+{% load static %}
+<script src="{% static 'cinema/scripts.js' %}"></script>
+<html lang="en">
+
+<head>
+
+    <title>Clienti</title>
+    <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        {% if user.is_authenticated%}
+        <span id="hello"> Bine ai venit, {{request.user}}! <a href="logout"
+                style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
+        {% else %}
+        {% endif %}
+
+        {% if has_notif == True %}
+            <a href="notifications" style = "color:#ff0000" ><i class="fa fa-bell"></i></a>
+        {% else %}
+            <a href="notifications" style = "color:#ffffff" ><i class="fa fa-bell"></i></a>
+        {% endif %} 
+    </div>
+
+
+    <div class="content">
+        <div class="navbar">
+            <ul>
+                <li><a href="index">Acasă <i class="fa fa-home"></i></a></li>
+                <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
+                <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
+                <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                        <li><a href="employee" style="color: #3333cc">Angajat </a></li>
+                     {% endif %}
+                    {% if group_for.name == 'admin' %}
+                        <li><a class="active" href="admin" style="color: #cc0000">Admin </a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class = "content-fluid">
+            <h3 align="center" class="m-10">Listă clienți</h3>
+            <div class="row">
+                <div class="col-12">
+                    {% if clients %}
+                    <div align="center" class="card bg-light ms-20 me-20 mb-20">
+                            <div style="width:80%" class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Username</th>
+                                            <th scope="col">First Name</th>
+                                            <th scope="col">Last Name</th>
+                                            <th scope="col">Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in clients %}
+                                        <tr>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.first_name }}</td>
+                                            <td>{{ user.last_name }}</td>
+                                            <td>{{ user.email }}</td>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                               
+                            </div>
+                            {% else %}
+                                <h5 class="alert alert"></i> No: Clients Records></h5>
+                            {% endif %}
+                    </div>
+                </div>
+</body>
+
+
+
+</html>
