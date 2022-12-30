@@ -55,7 +55,6 @@
         </div>   
        <br> <br> <br>
 
-       {% comment %} TODO: de adaugat si genre (ceva bug la adaugat din admin panel) {% endcomment %}
        <div align = "center" class = "shows">
             {% for movie in movies %}
                 <div style="border: solid; width: 80%; border-width:1; margin-left:2%" class = "show">
@@ -63,6 +62,7 @@
                             <tr style = "background-color: #c5e8ce">
                                 <th >  
                                     <h4><b>{{movie.title|upper}}</b></h4>
+                                    {% comment %} <h5><i>Gen: </i>{{movie.genre}}</h5> {% endcomment %}
                                     <h5><i>Durată</i>: {{movie.duration}} min</h5> 
                                     <h5><i>Regizor</i>: {{movie.director}} </h5>
                                     <h5><i>Data de lansare</i>: {{movie.release_date}} </h5>
