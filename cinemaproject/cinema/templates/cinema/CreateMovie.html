@@ -14,7 +14,7 @@
 
 <body>
     <div class="header">
-        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        <h1><a href="index" style="color: inherit; text-decoration: none;">{{settings.site_name}}</a></h1>
         {% if user.is_authenticated %}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
@@ -34,12 +34,16 @@
                 <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
-                <li><a class = "active" href="employee" style = "color: #3333cc">Angajat </a></li>
                 {% for group_for in request.user.groups.all %}
-                    {% if group_for.name == 'admin' %}
-                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
-                    {% endif %}
-                {% endfor %}
+                {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                    <li><a class = "active" href="employee" style = "color: #3333cc">Angajat </a></li>
+                {% endif %}
+    
+                {% if group_for.name == 'admin' %}
+                    <li><a href="admin" style = "color: #cc0000">Admin </a></li>
+                {% endif %}
+
+            {% endfor %}
 
             </ul>
         </div>

@@ -14,7 +14,7 @@
 
 <body>
     <div class="header">
-        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        <h1><a href="index" style="color: inherit; text-decoration: none;">{{settings.site_name}}</a></h1>
         {% if user.is_authenticated %}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
@@ -34,12 +34,16 @@
                 <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
-                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
                 {% for group_for in request.user.groups.all %}
-                    {% if group_for.name == 'admin' %}
-                        <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
-                    {% endif %}
-                {% endfor %}
+                {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                    <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                {% endif %}
+    
+                {% if group_for.name == 'admin' %}
+                    <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                {% endif %}
+
+            {% endfor %}
 
             </ul>
         </div>
@@ -55,7 +59,23 @@
         
     <button type="submit" class="save btn btn-default">Adaugă</button>  
    </form>
-   
+   <br><br>
+    <h3 align = "center">Listă angajați</h3>
+    <table align = "center" style = "width:50%" class = "table">
+        <tr>
+            <th>Angajat</th>
+            <th>Salariu</th>
+        </tr>
+
+        {% for employee in employees %}
+            <tr>
+                <td> {{employee.user_id}} </td>
+                <td> {{employee.salary}} lei</td>
+                <td> <button style = "border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="button"><a style = "text-decoration: none; color:#000000" href = "delete/employee/{{employee.id}}">concediază</a></button> </td>
+            </tr>
+        {% endfor %}
+    
+    </table>
 </body>
 
 </html>

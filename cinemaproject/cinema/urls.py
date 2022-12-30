@@ -22,5 +22,6 @@ urlpatterns = [
     path("view-clients", views.viewClients, name="clients"),
     path("add-employee", views.addEmployee, name="add-employee"),
     path("modify-price", views.modifyPrice, name="modify-price"),
-    path("view-statistics", views.viewStatistics, name="view-statistics")
+    path("view-statistics", views.viewStatistics, name="view-statistics"),
+    path("delete/employee/<int:employee_id>", views.deleteEmployeePage, name ="delete_employee")
 ]

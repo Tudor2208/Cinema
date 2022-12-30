@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from .models import *
 from django.utils import timezone
@@ -99,6 +99,31 @@ class Notification(models.Model):
     def __str__(self):
         return "Ptr " + str(self.user_id) + ": " + self.text + " (" + str(self.sent_date) + ")"
 
+class SingletonModel(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonModel, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+class SiteSettings(SingletonModel):
+    site_name = models.CharField(max_length=255, default='CinemaCity')
+    bookings_status = models.BooleanField(default=True) # enabled / disabled
+    contact_status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.site_name + ", bilete: " + str(self.bookings_status) + ", contact: " + str(self.contact_status)
 
 @receiver(post_save, sender=Show)
 def hear_signal(sender, instance, **kwargs):
@@ -128,7 +153,9 @@ def hear_signal_employee(sender, instance, **kwargs):
     if kwargs.get('created'):
         user = User.objects.get(username=instance.user_id)
         role = Group.objects.get(name = 'employee')
-        role.user_set.add(user)
+        is_admin = User.objects.filter(username=instance.user_id, groups__name='admin').exists()
+        if not is_admin:
+            role.user_set.add(user)
         employees = Employee.objects.filter(user_id=instance.user_id)
         
         if len(employees) > 1:
@@ -136,3 +163,10 @@ def hear_signal_employee(sender, instance, **kwargs):
             Notification(user_id=user, text="Salariul ți-a fost actualizat! Noul salariu: " + str(employees[1].salary) + " lei").save()    
         else:
             Notification(user_id=user, text="Salariul ți-a fost actualizat! Noul salariu: " + str(employees[0].salary) + " lei").save()    
+
+@receiver(pre_delete, sender=Employee)
+def hear_signal_del_employee(sender, instance, **kwargs):
+    user = instance.user_id
+    Notification(user_id=user, text="Ai fost concediat!").save()
+    group = Group.objects.get(name='employee') 
+    user.groups.remove(group)
