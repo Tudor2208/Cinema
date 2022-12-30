@@ -119,9 +119,11 @@ class SingletonModel(models.Model):
 
 class SiteSettings(SingletonModel):
     site_name = models.CharField(max_length=255, default='CinemaCity')
+    bookings_status = models.BooleanField(default=True) # enabled / disabled
+    contact_status = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.site_name
+        return self.site_name + ", bilete: " + str(self.bookings_status) + ", contact: " + str(self.contact_status)
 
 @receiver(post_save, sender=Show)
 def hear_signal(sender, instance, **kwargs):

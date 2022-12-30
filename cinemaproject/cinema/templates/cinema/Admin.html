@@ -34,8 +34,16 @@
                 <li><a href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
-                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
-                <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                        <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                    {% endif %}
+        
+                    {% if group_for.name == 'admin' %}
+                        <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+    
+                {% endfor %}
 
             </ul>
         </div>
@@ -55,7 +63,7 @@
             <tr>
                 <th>Setare</th>
                 <th>Valoare</th>
-                <th>Modifică</th>
+
             </tr>
 
             <tr>
@@ -68,11 +76,70 @@
                      </form>
                 </td>
             </tr>
+
+            <tr>
+                <td>Status rezervări (pornite / oprite)</td>
+                {% if settings.bookings_status == True %}
+                    <td>Pornite</td>
+                {% else %}
+                    <td>Oprite</td>
+                {% endif %}
+               
+                <td> 
+                    <form method="POST" action="">
+                        {%csrf_token%}
+                        <input type="checkbox" name="modify-bookings">
+                        <input type = "text" id = "check1" value = "not_checked" name = "check1" hidden>
+                        <input style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="submit" name="submit" value ="modifică">
+                     </form>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Status contact (pornit / oprit)</td>
+                {% if settings.contact_status == True %}
+                    <td>Pornit</td>
+                {% else %}
+                    <td>Oprit</td>
+                {% endif %}
+               
+                <td> 
+                    <form method="POST" action="">
+                        {%csrf_token%}
+                        <input type="checkbox" name="modify-contact">
+                        <input type = "text" id = "check2" value = "not_checked" name = "check2" hidden>
+                        <input style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="submit" name="submit" value ="modifică">
+                     </form>
+                </td>
+            </tr>
             
 
         </table>
     </div>
     
+    <script>
+        var checkbox1 = document.querySelector("input[name=modify-bookings]");
+
+        checkbox1.addEventListener('change', function() {
+          if (this.checked) {
+            document.getElementById("check1").value = "checked"
+          } else {
+            document.getElementById("check1").value = "not_checked"
+          }
+        });
+
+
+        var checkbox2 = document.querySelector("input[name=modify-contact]");
+
+        checkbox2.addEventListener('change', function() {
+          if (this.checked) {
+            document.getElementById("check2").value = "checked"
+          } else {
+            document.getElementById("check2").value = "not_checked"
+          }
+        });
+    </script>
 
 </body>
 

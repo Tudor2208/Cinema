@@ -130,9 +130,23 @@ def employeePage(request):
 @allowed_users(allowed_roles=['admin'])
 def adminPage(request):
     if request.method == 'POST':
-        name = request.POST.get('modify-name')
         settings = SiteSettings.load()
-        settings.site_name = name
+        name = request.POST.get('modify-name')
+        check1 = request.POST.get("check1")
+        check2 = request.POST.get("check2")
+    
+        if check1 == "not_checked":
+            settings.bookings_status = False
+        elif check1 == "checked":
+            settings.bookings_status = True
+        elif check2 == "not_checked":
+            settings.contact_status = False
+        elif check2 == "checked":
+            settings.contact_status = True
+
+        if name is not None:
+            settings.site_name = name
+
         settings.save()
 
     context = {}
@@ -148,9 +162,13 @@ def contactPage(request):
         message.save()
        
     messages = Message.objects.filter(sender = request.user)
-    dict = {'messages' : messages}
-    has_notif(dict, request)
-    return render(request, 'cinema/Contact.html', context=dict)
+    context = {'messages' : messages}
+    has_notif(context, request)
+    settings = context['settings']
+    if settings.contact_status == True:
+        return render(request, 'cinema/Contact.html', context=context)
+    else:
+        return render(request, "cinema/ContactDisabled.html", context=context)    
 
 @login_required(login_url = "login")
 def deleteMessagePage(request, msg_nr):
@@ -227,8 +245,12 @@ def ticketPage(request, show_nr):
 
         return redirect("http://localhost:8080/cinema/selectseats"+str(show_nr)+"_"+str(book.id)) 
 
-    has_notif(context, request)    
-    return render(request, "cinema/Ticket.html", context=context)
+    has_notif(context, request)
+    settings = context['settings']
+    if settings.bookings_status == True:    
+        return render(request, "cinema/Ticket.html", context=context)
+    else:
+        return render(request, "cinema/BookingsDisabled.html", context=context)    
 
 @login_required(login_url = "login")
 def selectSeatsPage(request, show_booking):

@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Adaugare angajat</title>
+    <title>Rezervari oprite</title>
     <link rel="stylesheet" href="{% static 'cinema/style.css' %}">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -19,7 +19,7 @@
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
         {% endif %}
-
+        
         {% if has_notif == True %}
             <a href="notifications" style = "color:#ff0000" ><i class="fa fa-bell"></i></a>
         {% else %}
@@ -35,47 +35,25 @@
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
                 {% for group_for in request.user.groups.all %}
-                {% if group_for.name == 'employee' or group_for.name == 'admin' %}
-                    <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
-                {% endif %}
-    
-                {% if group_for.name == 'admin' %}
-                    <li><a class = "active" href="admin" style = "color: #cc0000">Admin </a></li>
-                {% endif %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin'%}
+                        <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                    {% endif %}
 
-            {% endfor %}
+                    {% if group_for.name == 'admin' %}
+                        <li><a href="admin" style = "color: #cc0000">Admin </a></li>
+                    {% endif %}
+
+                {% endfor %}
 
             </ul>
         </div>
    </div>
 
-   <h2 align = "center"> Adăugare / Modificare angajat </h2>
-   <br>
-   <form align = "center" method="POST">
-    {% csrf_token %}
-        
-        <p style = "font-size: 18px">Utilizator {{form.user_id}} </p>
-        <p style = "font-size: 18px">Salariu(lei) {{form.salary}}</p>
-        
-    <button type="submit" class="save btn btn-default">Adaugă</button>  
-   </form>
-   <br><br>
-    <h3 align = "center">Listă angajați</h3>
-    <table align = "center" style = "width:50%" class = "table">
-        <tr>
-            <th>Angajat</th>
-            <th>Salariu</th>
-        </tr>
 
-        {% for employee in employees %}
-            <tr>
-                <td> {{employee.user_id}} </td>
-                <td> {{employee.salary}} lei</td>
-                <td> <button style = "border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="button"><a style = "text-decoration: none; color:#000000" href = "delete/employee/{{employee.id}}">concediază</a></button> </td>
-            </tr>
-        {% endfor %}
+
+   <h2 align = "center"> Cumpărarea de bilete a fost oprită temporar de către un administrator! </h2>
     
-    </table>
+
 </body>
 
 </html>

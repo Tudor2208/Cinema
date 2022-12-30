@@ -34,13 +34,16 @@
                 <li><a class = "active" href="schedule">Program <i class="fa fa-calendar"></i></a></li>
                 <li><a href="profile">Profil <i class="fa fa-address-book"></i> </a></li>
                 <li><a href="contact">Contact <i class="fa fa-phone"></i></a></li>
-                <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
                 {% for group_for in request.user.groups.all %}
+                    {% if group_for.name == 'employee' or group_for.name == 'admin' %}
+                        <li><a href="employee" style = "color: #3333cc">Angajat </a></li>
+                    {% endif %}
+        
                     {% if group_for.name == 'admin' %}
                         <li><a href="admin" style = "color: #cc0000">Admin </a></li>
                     {% endif %}
+    
                 {% endfor %}
-
             </ul>
         </div>
    </div>
