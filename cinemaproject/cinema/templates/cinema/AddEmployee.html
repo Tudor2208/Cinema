@@ -55,7 +55,23 @@
         
     <button type="submit" class="save btn btn-default">Adaugă</button>  
    </form>
-   
+   <br><br>
+    <h3 align = "center">Listă angajați</h3>
+    <table align = "center" style = "width:50%" class = "table">
+        <tr>
+            <th>Angajat</th>
+            <th>Salariu</th>
+        </tr>
+
+        {% for employee in employees %}
+            <tr>
+                <td> {{employee.user_id}} </td>
+                <td> {{employee.salary}} lei</td>
+                <td> <button style = "border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="button"><a style = "text-decoration: none; color:#000000" href = "delete/employee/{{employee.id}}">concediază</a></button> </td>
+            </tr>
+        {% endfor %}
+    
+    </table>
 </body>
 
 </html>

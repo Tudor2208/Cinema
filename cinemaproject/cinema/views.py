@@ -298,8 +298,10 @@ def addEmployee(request):
     form = EmployeeForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         form.save()
-        return redirect("admin")
     context['form']= form
+
+    all_employees = Employee.objects.all()
+    context['employees'] = all_employees
     return render(request, "cinema/AddEmployee.html", context=context)                  
 
 @allowed_users(allowed_roles=['admin'])
@@ -377,3 +379,9 @@ def viewStatistics(request):
 
        
     return render(request, "cinema/ViewStatistics.html", context=context)
+
+@allowed_users(allowed_roles=['admin'])
+def deleteEmployeePage(request, employee_id):
+    my_empl = Employee.objects.get(id=employee_id)
+    my_empl.delete()
+    return redirect('add-employee')
