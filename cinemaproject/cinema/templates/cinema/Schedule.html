@@ -13,7 +13,7 @@
 
 <body>
     <div class="header">
-        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        <h1><a href="index" style="color: inherit; text-decoration: none;">{{settings.site_name}}</a></h1>
         {% if user.is_authenticated %}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
@@ -50,7 +50,7 @@
        
         <br> <br>
         <div align = "center">
-            <h4> FILMELE CARE RULEAZĂ ÎN ACEASTĂ SĂPTĂMÂNĂ </h4>
+            <h4> FILMELE DIN ACEASTĂ SĂPTĂMÂNĂ </h4>
             <h5 id="week"> <h5>
         </div>   
        <br> <br> <br>

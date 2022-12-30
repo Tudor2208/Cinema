@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from .models import Message, Show, ShowSeat, Ticket, Booking, Notification, Employee
+from .models import Message, Show, ShowSeat, Ticket, Booking, Notification, Employee, SiteSettings
 import pendulum
 from datetime import date, datetime
 import calendar
@@ -18,6 +18,7 @@ from django.utils import timezone
 # Create your views here.
 
 def has_notif(context, request):
+    context['settings'] = SiteSettings.load()
     context['has_notif'] = Notification.objects.filter(user_id=request.user).count() > 0
 
 def index(request):
@@ -88,7 +89,8 @@ def loginPage(request):
         else:
             messages.info(request, "Numele de utilizator sau parola sunt gresite!")
 
-    return render(request, 'cinema/Login.html')
+    context = {'settings':SiteSettings.load()}
+    return render(request, 'cinema/Login.html', context=context)
 
 @login_required(login_url = "login")
 def logoutPage(request):
@@ -108,7 +110,7 @@ def register(request):
             messages.success(request, "Contul a fost creat cu succes!")
             return redirect('login')
 
-    context = {'form' : form}
+    context = {'form' : form, 'settings':SiteSettings.load()}
     return render(request, 'cinema/Register.html', context)
 
 @allowed_users(allowed_roles=['employee', 'admin'])
@@ -127,7 +129,15 @@ def employeePage(request):
 
 @allowed_users(allowed_roles=['admin'])
 def adminPage(request):
-    return render(request, 'cinema/Admin.html')
+    if request.method == 'POST':
+        name = request.POST.get('modify-name')
+        settings = SiteSettings.load()
+        settings.site_name = name
+        settings.save()
+
+    context = {}
+    has_notif(context, request)
+    return render(request, 'cinema/Admin.html', context=context)
    
 
 @login_required(login_url = "login")
@@ -290,7 +300,9 @@ def deleteNotificationPage(request, notif_nr):
 
 @allowed_users(allowed_roles=['admin'])
 def viewClients(request):
-    return render(request, "cinema/Clients.html", {'clients': User.objects.all()})   
+    context = {'clients': User.objects.all()}
+    has_notif(context, request)
+    return render(request, "cinema/Clients.html", context=context)   
 
 @allowed_users(allowed_roles=['admin'])
 def addEmployee(request):
@@ -302,6 +314,7 @@ def addEmployee(request):
 
     all_employees = Employee.objects.all()
     context['employees'] = all_employees
+    has_notif(context, request)
     return render(request, "cinema/AddEmployee.html", context=context)                  
 
 @allowed_users(allowed_roles=['admin'])
@@ -340,7 +353,9 @@ def modifyPrice(request):
                 record.price = price_copil
                 record.save(update_fields=['price'])
 
-    return render(request, "cinema/ModifyTicketPrice.html", {"tickets":tickets})   
+    context = {"tickets":tickets}
+    has_notif(context, request)
+    return render(request, "cinema/ModifyTicketPrice.html", context=context)   
 
 
 @allowed_users(allowed_roles=['admin'])
@@ -377,7 +392,7 @@ def viewStatistics(request):
         context['v'+str(month)] = max_movie     
         context['l'+str(month)] = total_sum
 
-       
+    has_notif(context, request)   
     return render(request, "cinema/ViewStatistics.html", context=context)
 
 @allowed_users(allowed_roles=['admin'])

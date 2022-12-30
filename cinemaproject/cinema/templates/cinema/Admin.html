@@ -14,12 +14,17 @@
 
 <body>
     <div class="header">
-        <h1><a href="index" style="color: inherit; text-decoration: none;">CinemaCity</a></h1>
+        <h1><a href="index" style="color: inherit; text-decoration: none;">{{settings.site_name}}</a></h1>
         {% if user.is_authenticated %}
             <span id = "hello"> Bine ai venit, {{request.user}}! <a href="logout" style="color: #ff0000; text-decoration: none;"> (logout)</a></span>
         {% else %}
         {% endif %}
         
+        {% if has_notif == True %}
+            <a href="notifications" style = "color:#ff0000" ><i class="fa fa-bell"></i></a>
+        {% else %}
+            <a href="notifications" style = "color:#ffffff" ><i class="fa fa-bell"></i></a>
+        {% endif %} 
     </div>
 
     <div class="content">
@@ -42,6 +47,32 @@
         <button style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 22px" type="button"><a style = "color: #000000; text-decoration: none" href = "modify-price">Modificare preț bilete</a></button>
         <button style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 22px" type="button"><a style = "color: #000000; text-decoration: none" href = "view-statistics">Vizualizare statistici</a></button>
     </div>    
+
+    <br><br>
+    <div align = "center">
+        <h3>Modifică setările site-ului<h3>
+        <table style = "width:50%" class = "table">
+            <tr>
+                <th>Setare</th>
+                <th>Valoare</th>
+                <th>Modifică</th>
+            </tr>
+
+            <tr>
+                <td>Nume site</td>
+                <td>{{settings.site_name}}</td>
+                <td> <form method="POST" action="">
+                        {%csrf_token%}
+                        <input type="text" name="modify-name" placeholder = "new name" value = {{settings.site_name}}>
+                        <input style = "margin-left: 20; border-radius: 10px; background-color: #0EAF92; color: #000000; font-size: 15px" type="submit" name="submit" value ="modifică">
+                     </form>
+                </td>
+            </tr>
+            
+
+        </table>
+    </div>
+    
 
 </body>
 
