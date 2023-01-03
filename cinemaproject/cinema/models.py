@@ -129,10 +129,10 @@ class SiteSettings(SingletonModel):
 def hear_signal(sender, instance, **kwargs):
     if kwargs.get('created'):
         cinema_hall = CinemaHall.objects.filter(id=instance.cinema_hall_ID.id)[0]
-        mock_booking = Booking.objects.filter(id=4)[0]
+        mock_booking = Booking.objects.filter(id=2)[0]
         seats = cinema_hall.nr_of_seats
         for i in range(seats):
-            #booking 4 - e hardcodat, inseamna NULL
+            #booking 2 - e hardcodat, inseamna NULL
             showSeat = ShowSeat(show_ID=instance, booking_ID=mock_booking, seat_nr=i+1, booked=False)
             showSeat.save()   
     return
@@ -144,8 +144,6 @@ def hear_signal_message(sender, instance, **kwargs):
         Notification(user_id=user, text="Un angajat tocmai ti-a raspuns la un mesaj!").save()
 
     return
-
-    #TODO: de adaugat mai multe tipuri de notificari
 
 
 @receiver(post_save, sender=Employee)
